@@ -1,0 +1,41 @@
+# Documentation and design notes — kept local, not tracked
+/docs/
+/CONTEXT.md
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+.metro-health-check*
+
+# Native build artifacts
+*.apk
+*.aab
+*.ipa
+/android/
+/ios/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+.cache/
+coverage/
