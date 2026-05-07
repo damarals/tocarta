@@ -72,6 +72,10 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen name="playback" options={{ title: '' }} />
+        <Stack.Screen
+          name="import"
+          options={{ title: '', headerBackVisible: false, gestureEnabled: false }}
+        />
       </Stack>
       <StatusBar style="light" />
     </SafeAreaProvider>
