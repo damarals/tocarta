@@ -17,7 +17,10 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.tocarta.app"
+      "package": "com.tocarta.app",
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "output": "static",
@@ -46,6 +49,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "27646660-0276-433f-bdac-53cb6ceb2eb5"
+      }
+    },
+    "owner": "damarals"
   }
 }
