@@ -7,7 +7,6 @@ import { BrandMark } from '@/components/brand/BrandMark';
 import { Wordmark } from '@/components/brand/Wordmark';
 import { DeckCard } from '@/components/library/DeckCard';
 import { EmptyLibrary } from '@/components/library/EmptyLibrary';
-import { FirstLaunchBanner } from '@/components/library/FirstLaunchBanner';
 import { NewDeckFAB } from '@/components/library/NewDeckFAB';
 import { ScanCTA } from '@/components/library/ScanCTA';
 import { Text } from '@/components/ui/text';
@@ -91,10 +90,6 @@ export default function LibraryScreen() {
       <View className="flex-row items-center gap-2.5 px-5 pt-5 pb-4">
         <BrandMark size={36} />
         <Wordmark size={22} />
-      </View>
-
-      <View className="px-5">
-        <FirstLaunchBanner className="mb-4" />
       </View>
 
       <View className="px-5 pb-5">
