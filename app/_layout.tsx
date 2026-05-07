@@ -63,6 +63,15 @@ export default function RootLayout() {
         />
         <Stack.Screen name="export/[id]" options={{ title: '' }} />
         <Stack.Screen name="card/[deckId]/[isrc]" options={{ title: '' }} />
+        <Stack.Screen
+          name="scan"
+          options={{
+            title: '',
+            headerTransparent: true,
+            contentStyle: { backgroundColor: '#000' },
+          }}
+        />
+        <Stack.Screen name="playback" options={{ title: '' }} />
       </Stack>
       <StatusBar style="light" />
     </SafeAreaProvider>
