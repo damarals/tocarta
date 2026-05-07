@@ -90,7 +90,7 @@ export default function LibraryScreen() {
     <SafeAreaView edges={['top', 'left', 'right']} className="flex-1 bg-background">
       <View className="flex-row items-center gap-2.5 px-5 pt-5 pb-4">
         <BrandMark size={36} />
-        <Wordmark size={22} variant="split" />
+        <Wordmark size={22} />
       </View>
 
       <View className="px-5">
