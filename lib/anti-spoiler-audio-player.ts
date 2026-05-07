@@ -20,7 +20,7 @@
  * route metadata through here.
  */
 
-import { Audio } from 'expo-av';
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 
 /**
  * The only shape callers see for status updates. Intentionally narrow:
@@ -158,4 +158,39 @@ export function createAntiSpoilerAudioPlayer(opts?: {
       }
     },
   };
+}
+
+/**
+ * Configure the OS audio session for play mode so that the lock screen,
+ * notification shade, control centre, Bluetooth headphone displays, and
+ * Android Auto have nothing identifying to surface.
+ *
+ * The defining choice is `staysActiveInBackground: false`. When the device
+ * locks or the app backgrounds mid-play, audio stops and no MediaSession
+ * card is created — so there is no surface left for OS-level metadata leaks
+ * (per ADR-0009). This is the OS-level companion to the per-track scrubbing
+ * `createAntiSpoilerAudioPlayer` already enforces.
+ *
+ * Call this once on Playback screen mount, before `play()`.
+ */
+export async function configureAudioModeForPlay(opts?: {
+  audioModule?: typeof Audio;
+}): Promise<void> {
+  const audioModule = opts?.audioModule ?? Audio;
+  await audioModule.setAudioModeAsync({
+    // Stop audio cleanly when the app backgrounds or the device locks. With
+    // this off, the OS does not create a persistent MediaSession card —
+    // there's nothing for the lock screen or headphones to display.
+    staysActiveInBackground: false,
+    // Respect the user's silent switch on iOS. Doesn't affect anti-spoiler;
+    // it's a UX choice — the table can be quiet when it needs to be.
+    playsInSilentModeIOS: false,
+    // Don't share the audio focus with other apps — a single 30-second
+    // preview should fully own playback for that window.
+    interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+    interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+    // Don't lower volume in response to other apps; pause cleanly via the
+    // DoNotMix mode above.
+    shouldDuckAndroid: false,
+  });
 }
