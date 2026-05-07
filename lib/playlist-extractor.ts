@@ -1,7 +1,18 @@
 import { parseDeezerPlaylistUrl } from './deezer-url';
 
 export type RawTrack = { isrc: string; artist: string; title: string };
-export type ExtractResult = { name: string; tracks: RawTrack[] };
+
+export type ExtractorDroppedTrack = {
+  artist: string;
+  title: string;
+  reason: "Track wasn't tagged with a unique ID";
+};
+
+export type ExtractResult = {
+  name: string;
+  tracks: RawTrack[];
+  droppedTracks: ExtractorDroppedTrack[];
+};
 
 export type ExtractError =
   | { kind: 'invalid_url' }
@@ -87,15 +98,26 @@ function checkDeezerErrorBody(error: { code?: number; type?: string } | undefine
   });
 }
 
-function toRawTrack(t: DeezerTrackRaw): RawTrack | null {
-  // Tracks without an ISRC are unplayable through Tocarta, so drop them here.
-  // Issue #4 will surface dropped-track reasons; for #3 we just filter.
-  const isrc = typeof t.isrc === 'string' ? t.isrc : '';
-  if (isrc === '') return null;
+type ClassifiedTrack =
+  | { kind: 'kept'; track: RawTrack }
+  | { kind: 'dropped'; dropped: ExtractorDroppedTrack };
+
+function classifyTrack(t: DeezerTrackRaw): ClassifiedTrack {
   const title = typeof t.title === 'string' ? t.title : '';
   const artistName =
     t.artist && typeof t.artist.name === 'string' ? t.artist.name : '';
-  return { isrc, artist: artistName, title };
+  const isrc = typeof t.isrc === 'string' ? t.isrc : '';
+  if (isrc === '') {
+    return {
+      kind: 'dropped',
+      dropped: {
+        artist: artistName,
+        title,
+        reason: "Track wasn't tagged with a unique ID",
+      },
+    };
+  }
+  return { kind: 'kept', track: { isrc, artist: artistName, title } };
 }
 
 export async function extractFromDeezerUrl(url: string): Promise<ExtractResult> {
@@ -111,10 +133,16 @@ export async function extractFromDeezerUrl(url: string): Promise<ExtractResult> 
   const total = playlist.tracks?.total ?? firstPage.length;
 
   const collected: RawTrack[] = [];
-  for (const t of firstPage) {
-    const raw = toRawTrack(t);
-    if (raw !== null) collected.push(raw);
-  }
+  const dropped: ExtractorDroppedTrack[] = [];
+  const ingest = (page: DeezerTrackRaw[]): void => {
+    for (const t of page) {
+      const result = classifyTrack(t);
+      if (result.kind === 'kept') collected.push(result.track);
+      else dropped.push(result.dropped);
+    }
+  };
+
+  ingest(firstPage);
 
   let index = firstPage.length;
   while (index < total) {
@@ -123,12 +151,9 @@ export async function extractFromDeezerUrl(url: string): Promise<ExtractResult> 
     checkDeezerErrorBody(page.error);
     const pageTracks = page.data ?? [];
     if (pageTracks.length === 0) break;
-    for (const t of pageTracks) {
-      const raw = toRawTrack(t);
-      if (raw !== null) collected.push(raw);
-    }
+    ingest(pageTracks);
     index += pageTracks.length;
   }
 
-  return { name, tracks: collected };
+  return { name, tracks: collected, droppedTracks: dropped };
 }
