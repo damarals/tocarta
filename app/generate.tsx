@@ -1,15 +1,19 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, TextInput, View } from 'react-native';
+import { ScrollView, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PushButton } from '@/components/ui/push-button';
+import { Step } from '@/components/ui/step';
 import { Text } from '@/components/ui/text';
 import { parseDeezerPlaylistUrl } from '@/lib/deezer-url';
 import { cn } from '@/lib/utils';
+import { tokens } from '@/theme/tokens';
 
-const EXAMPLE_URL = 'https://www.deezer.com/playlist/908622995';
-const PLACEHOLDER_TEXT_COLOR = 'rgb(168 179 199 / 0.5)';
-const INPUT_TEXT_COLOR = 'rgb(168 179 199)';
+const EXAMPLE_URL = 'https://www.deezer.com/playlist/123456';
+const PLACEHOLDER_TEXT_COLOR = 'rgba(196, 204, 223, 0.4)';
+const INPUT_TEXT_COLOR = tokens.colors.navy50;
 
 const STEPS: readonly string[] = [
   'We fetch the tracks from Deezer.',
@@ -37,16 +41,31 @@ function helperText(validity: Validity): string {
 }
 
 const HELPER_CLASSES: Record<Validity, string> = {
-  empty: 'text-muted-foreground',
-  invalid: 'text-destructive',
-  valid: 'text-primary',
+  empty: 'text-navy400',
+  invalid: 'text-red',
+  valid: 'text-lime',
 };
 
-const BORDER_CLASSES: Record<Validity, string> = {
-  empty: 'border-border',
-  invalid: 'border-destructive',
-  valid: 'border-primary',
+const INPUT_BORDER_CLASSES: Record<Validity, string> = {
+  empty: 'border-navy600',
+  invalid: 'border-red',
+  valid: 'border-lime',
 };
+
+function Eyebrow({ children, className }: { children: string; className?: string }) {
+  return (
+    <Text
+      className={cn('font-display text-navy400 text-xs mb-2', className)}
+      style={{
+        fontFamily: 'Nunito_800ExtraBold',
+        letterSpacing: 1.4,
+        textTransform: 'uppercase',
+      }}
+    >
+      {children}
+    </Text>
+  );
+}
 
 export default function GenerateScreen() {
   const router = useRouter();
@@ -62,81 +81,113 @@ export default function GenerateScreen() {
     <SafeAreaView edges={['left', 'right', 'bottom']} className="flex-1 bg-background">
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-6 pt-2 pb-10 gap-6"
+        contentContainerClassName="px-5 pt-2 pb-10"
         keyboardShouldPersistTaps="handled"
       >
-        <View className="gap-2">
-          <Text className="font-display text-foreground text-4xl">Create a deck</Text>
-          <Text className="font-body text-muted-foreground text-base leading-relaxed">
-            Paste a public Deezer playlist link and we&apos;ll turn it into a deck.
-          </Text>
-        </View>
+        <Text
+          className="text-foreground"
+          style={{
+            fontFamily: 'Nunito_900Black',
+            fontSize: 28,
+            lineHeight: 30,
+            letterSpacing: -0.56,
+          }}
+        >
+          Paste a Deezer playlist URL.
+        </Text>
+        <Text
+          className="font-display text-navy200 text-sm mt-2.5"
+          style={{ fontFamily: 'Nunito_600SemiBold', lineHeight: 21 }}
+        >
+          We fetch the tracks from Deezer and look up each track&apos;s release year.
+          You&apos;ll review before printing.
+        </Text>
 
-        <View className="gap-2">
-          <Text className="font-body text-foreground text-sm font-bold">
-            Deezer playlist link
-          </Text>
-          <TextInput
-            value={url}
-            onChangeText={setUrl}
-            placeholder={EXAMPLE_URL}
-            placeholderTextColor={PLACEHOLDER_TEXT_COLOR}
-            keyboardType="url"
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoComplete="url"
-            inputMode="url"
-            spellCheck={false}
-            returnKeyType="go"
-            onSubmitEditing={onSubmit}
-            accessibilityLabel="Deezer playlist link"
-            style={{ color: INPUT_TEXT_COLOR, fontFamily: 'Nunito' }}
-            className={cn(
-              'rounded-xl border bg-card px-4 py-4 text-base',
-              BORDER_CLASSES[validity],
+        <View className="mt-6">
+          <Eyebrow>Playlist URL</Eyebrow>
+          <View className="relative">
+            <TextInput
+              value={url}
+              onChangeText={setUrl}
+              placeholder={EXAMPLE_URL}
+              placeholderTextColor={PLACEHOLDER_TEXT_COLOR}
+              keyboardType="url"
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="url"
+              inputMode="url"
+              spellCheck={false}
+              returnKeyType="go"
+              onSubmitEditing={onSubmit}
+              accessibilityLabel="Deezer playlist link"
+              style={{
+                color: INPUT_TEXT_COLOR,
+                fontFamily: 'JetBrainsMono_500Medium',
+                fontSize: 13,
+              }}
+              className={cn(
+                'rounded-2xl border-[1.5px] bg-navy800 px-4 py-3 pr-10',
+                INPUT_BORDER_CLASSES[validity],
+              )}
+            />
+            {validity === 'valid' && (
+              <View
+                className="absolute right-3"
+                style={{ top: 0, bottom: 0, justifyContent: 'center' }}
+                pointerEvents="none"
+              >
+                <Ionicons
+                  name="checkmark-circle"
+                  size={20}
+                  color={tokens.colors.lime}
+                />
+              </View>
             )}
-          />
-          <Text className={cn('font-body text-sm', HELPER_CLASSES[validity])}>
+          </View>
+          <Text
+            className={cn(
+              'font-display text-xs mt-2',
+              HELPER_CLASSES[validity],
+            )}
+            style={{ fontFamily: 'Nunito_600SemiBold', lineHeight: 18 }}
+          >
             {helperText(validity)}
           </Text>
         </View>
 
-        <View className="rounded-xl border border-border bg-card p-5 gap-3">
-          <Text className="font-display text-card-foreground text-xl">
-            What happens next
+        <View className="mt-6">
+          <Eyebrow>What happens next</Eyebrow>
+          <View className="rounded-2xl border-[1.5px] border-navy600 bg-navy800 px-4">
+            {STEPS.map((step, idx) => (
+              <Step
+                key={step}
+                n={idx + 1}
+                text={step}
+                last={idx === STEPS.length - 1}
+              />
+            ))}
+          </View>
+        </View>
+
+        <View className="mt-6">
+          <PushButton
+            variant="primary"
+            size="lg"
+            fullWidth
+            disabled={validity !== 'valid'}
+            onPress={onSubmit}
+            accessibilityLabel="Resolve tracks"
+          >
+            Resolve tracks
+          </PushButton>
+          <Text
+            className="font-display text-navy400 text-xs text-center mt-3"
+            style={{ fontFamily: 'Nunito_700Bold', lineHeight: 18 }}
+          >
+            We&apos;ll let you review every track before printing.
           </Text>
-          {STEPS.map((step, idx) => (
-            <View key={step} className="flex-row items-start gap-3">
-              <View className="h-6 w-6 items-center justify-center rounded-full bg-primary">
-                <Text className="font-body text-primary-foreground text-xs font-bold">
-                  {idx + 1}
-                </Text>
-              </View>
-              <Text className="font-body text-card-foreground text-base flex-1 leading-relaxed">
-                {step}
-              </Text>
-            </View>
-          ))}
         </View>
       </ScrollView>
-
-      <View className="px-6 pb-6 pt-2">
-        <Pressable
-          onPress={onSubmit}
-          disabled={validity !== 'valid'}
-          role="button"
-          accessibilityLabel="Resolve tracks"
-          accessibilityState={{ disabled: validity !== 'valid' }}
-          className={cn(
-            'items-center justify-center rounded-full bg-primary px-6 py-4 active:bg-primary/90',
-            validity !== 'valid' && 'opacity-50',
-          )}
-        >
-          <Text className="font-body text-primary-foreground text-base font-bold">
-            Resolve tracks
-          </Text>
-        </Pressable>
-      </View>
     </SafeAreaView>
   );
 }
