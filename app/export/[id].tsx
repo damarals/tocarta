@@ -2,16 +2,20 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Sharing from 'expo-sharing';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BrandMark } from '@/components/brand/BrandMark';
+import { PushButton } from '@/components/ui/push-button';
+import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import { deckLibrary } from '@/lib/deck-library';
 import { pdfRenderer, type RenderedDeckPdf } from '@/lib/pdf-renderer';
+import { slug } from '@/lib/slug';
 import type { Deck } from '@/lib/types';
+import { tokens } from '@/theme/tokens';
 
-const LIME = 'rgb(200 232 74)';
-const NAVY900 = 'rgb(13 20 34)';
+const CARDS_PER_PAGE = 12; // ADR-0014: 3 cols × 4 rows on A4.
 
 /** Minimum time the rendering state stays on screen before flipping to done.
  *  Holds even if the underlying render is faster, so the spinner doesn't
@@ -71,18 +75,25 @@ export default function ExportScreen() {
   }, [id]);
 
   return (
-    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} className="flex-1 bg-background">
-      <View className="flex-1 items-center justify-center px-8 gap-6">
-        {(state.kind === 'loading-deck' || state.kind === 'rendering') && (
-          <RenderingPanel />
+    <SafeAreaView edges={['left', 'right', 'bottom']} className="flex-1 bg-background">
+      <ScreenHeader title="Export" />
+      <View className="flex-1 items-center justify-center px-6">
+        {state.kind === 'loading-deck' && (
+          <View className="items-center gap-4">
+            <ActivityIndicator color={tokens.colors.lime} />
+          </View>
         )}
+
+        {state.kind === 'rendering' && <RenderingPanel cardCount={state.deck.cards.length} />}
 
         {state.kind === 'done' && (
           <DonePanel
-            filename={state.rendered.filename}
+            deck={state.deck}
+            rendered={state.rendered}
             onShare={() => {
               void shareSafely(state.rendered.uri);
             }}
+            onDone={() => router.replace('/')}
           />
         )}
 
@@ -92,19 +103,25 @@ export default function ExportScreen() {
 
         {state.kind === 'not-found' && (
           <View className="items-center gap-4">
-            <Text className="font-body text-muted-foreground text-base text-center">
+            <Text
+              className="text-foreground text-center"
+              style={{
+                fontFamily: 'Nunito_900Black',
+                fontSize: 22,
+                lineHeight: 26,
+                letterSpacing: -0.36,
+              }}
+            >
               Deck not found.
             </Text>
-            <Pressable
+            <PushButton
+              variant="primary"
+              size="md"
               onPress={() => router.replace('/')}
-              role="button"
               accessibilityLabel="Back to library"
-              className="items-center justify-center rounded-full bg-primary px-6 py-3 active:bg-primary/90"
             >
-              <Text className="font-body text-primary-foreground text-base font-bold">
-                Back to library
-              </Text>
-            </Pressable>
+              Back to library
+            </PushButton>
           </View>
         )}
       </View>
@@ -129,64 +146,162 @@ async function shareSafely(uri: string): Promise<void> {
   }
 }
 
-function RenderingPanel(): React.ReactElement {
+function RenderingPanel({ cardCount }: { cardCount: number }): React.ReactElement {
   return (
-    <View className="items-center gap-5">
-      <View
-        accessibilityLabel="Rendering deck"
-        className="h-32 w-32 items-center justify-center rounded-2xl border border-lime/40 bg-navy700"
+    <View className="items-center gap-7">
+      <BrandMark size={88} spinning />
+      <Text
+        className="text-foreground text-center"
+        style={{
+          fontFamily: 'Nunito_900Black',
+          fontSize: 24,
+          lineHeight: 26,
+          letterSpacing: -0.48,
+        }}
       >
-        <ActivityIndicator color={LIME} size="large" />
-      </View>
-      <Text className="font-display text-foreground text-2xl">
         Laying out the PDF…
       </Text>
-      <Text className="font-body text-muted-foreground text-sm text-center max-w-[280px] leading-relaxed">
-        Cards are being arranged for A4. Hold tight — this only takes a moment.
+      <Text
+        accessibilityLabel="Render details"
+        className="text-navy200 text-center"
+        style={{
+          fontFamily: 'JetBrainsMono_500Medium',
+          fontSize: 12,
+          lineHeight: 18,
+        }}
+      >
+        {cardCount} {cardCount === 1 ? 'card' : 'cards'} · A4 · duplex · crop marks
       </Text>
     </View>
   );
 }
 
-type DonePanelProps = { filename: string; onShare: () => void };
+type DonePanelProps = {
+  deck: Deck;
+  rendered: RenderedDeckPdf;
+  onShare: () => void;
+  onDone: () => void;
+};
 
-function DonePanel({ filename, onShare }: DonePanelProps): React.ReactElement {
+function DonePanel({ deck, rendered, onShare, onDone }: DonePanelProps): React.ReactElement {
+  // The page count approximation: ceil(N/12) sheets for fronts and
+  // again for backs, since the proto's PDF is duplex.
+  const sheetCount = Math.max(1, Math.ceil(deck.cards.length / CARDS_PER_PAGE));
+  const totalPages = sheetCount * 2;
+  const fileSlug = slug(deck.name);
+  const filename = `tocarta-${fileSlug}.pdf`;
+
   return (
-    <View className="items-center gap-5">
-      <View
-        accessibilityLabel="PDF ready"
-        className="h-32 w-32 items-center justify-center rounded-2xl bg-lime"
-      >
-        <Ionicons name="checkmark" size={64} color={NAVY900} />
+    <View className="items-center gap-5 w-full">
+      {/* Glow halo + lime tile with checkmark */}
+      <View className="items-center justify-center" style={{ width: 120, height: 120 }}>
+        <View
+          style={{
+            position: 'absolute',
+            width: 120,
+            height: 120,
+            borderRadius: 36,
+            backgroundColor: tokens.colors.lime,
+            opacity: 0.18,
+          }}
+        />
+        <View
+          accessibilityLabel="PDF ready"
+          style={{
+            width: 88,
+            height: 88,
+            borderRadius: 28,
+            backgroundColor: tokens.colors.lime,
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadowColor: tokens.colors.limeD,
+            shadowOpacity: 1,
+            shadowRadius: 0,
+            shadowOffset: { width: 0, height: 8 },
+          }}
+        >
+          <Ionicons name="checkmark" size={48} color={tokens.colors.navy900} />
+        </View>
       </View>
-      <View className="items-center gap-2">
-        <Text className="font-display text-foreground text-2xl text-center">
-          Your deck is ready
+
+      <Text
+        className="text-foreground text-center"
+        style={{
+          fontFamily: 'Nunito_900Black',
+          fontSize: 28,
+          lineHeight: 30,
+          letterSpacing: -0.56,
+        }}
+      >
+        Deck ready.
+      </Text>
+
+      <Text
+        accessibilityLabel="File name"
+        className="text-navy200 text-center"
+        style={{
+          fontFamily: 'Nunito_600SemiBold',
+          fontSize: 14,
+          lineHeight: 20,
+          maxWidth: 280,
+        }}
+      >
+        {filename}
+        {'\n'}— {totalPages} pages, print double-sided on A4.
+      </Text>
+
+      <View
+        style={{ width: '100%', maxWidth: 320 }}
+        className="rounded-2xl border-[1.5px] border-navy600 bg-navy800 p-4"
+      >
+        <Text
+          className="text-navy400"
+          style={{
+            fontFamily: 'Nunito_800ExtraBold',
+            fontSize: 11,
+            letterSpacing: 1.32,
+            textTransform: 'uppercase',
+            marginBottom: 6,
+          }}
+        >
+          Tip
         </Text>
         <Text
-          accessibilityLabel="File name"
-          className="font-body text-muted-foreground text-base text-center"
-          style={{ fontFamily: 'Nunito' }}
+          className="text-navy200"
+          style={{
+            fontFamily: 'JetBrainsMono_500Medium',
+            fontSize: 12,
+            lineHeight: 18,
+          }}
         >
-          {filename}
+          Print double-sided on A4 and cut along the marks. 100% scale, no
+          auto-rotate, flip on the long edge.
         </Text>
       </View>
-      <View className="rounded-xl border border-navy500 bg-navy700 px-4 py-3 max-w-[320px]">
-        <Text className="font-body text-muted-foreground text-sm leading-relaxed text-center">
-          Print at 100% scale, no auto-rotate, flip on the long edge so the
-          backs land on the right cards.
-        </Text>
-      </View>
-      <Pressable
-        onPress={onShare}
-        role="button"
-        accessibilityLabel="Save to files"
-        className="items-center justify-center rounded-full bg-primary px-7 py-3 active:bg-primary/90"
-      >
-        <Text className="font-body text-primary-foreground text-base font-bold">
+
+      <View className="flex-row gap-2.5 mt-2">
+        <PushButton
+          variant="ghost"
+          size="md"
+          onPress={onShare}
+          accessibilityLabel="Save to files"
+          icon={<Ionicons name="download" size={16} color={tokens.colors.navy200} />}
+        >
           Save to files
-        </Text>
-      </Pressable>
+        </PushButton>
+        <PushButton
+          variant="primary"
+          size="md"
+          onPress={onDone}
+          accessibilityLabel="Done"
+          icon={<Ionicons name="checkmark" size={16} color={tokens.colors.navy900} />}
+        >
+          Done
+        </PushButton>
+      </View>
+      {/* `rendered` is consumed via onShare; reference here keeps it
+          flowing through the panel even when share is not yet pressed. */}
+      <View accessibilityLabel={rendered.filename} style={{ height: 0 }} />
     </View>
   );
 }
@@ -198,29 +313,42 @@ function ErrorPanel({ message, onBack }: ErrorPanelProps): React.ReactElement {
     <View className="items-center gap-5">
       <View
         accessibilityLabel="Export failed"
-        className="h-32 w-32 items-center justify-center rounded-2xl border border-red bg-navy700"
+        className="h-24 w-24 items-center justify-center rounded-3xl border-[1.5px] border-red bg-navy800"
       >
-        <Ionicons name="alert-circle" size={56} color="rgb(239 68 68)" />
+        <Ionicons name="alert-circle" size={56} color={tokens.colors.red} />
       </View>
-      <Text className="font-display text-foreground text-2xl text-center">
+      <Text
+        className="text-foreground text-center"
+        style={{
+          fontFamily: 'Nunito_900Black',
+          fontSize: 22,
+          lineHeight: 26,
+          letterSpacing: -0.36,
+          maxWidth: 280,
+        }}
+      >
         We couldn&apos;t make the PDF
       </Text>
       <Text
         accessibilityLabel="Error details"
-        className="font-body text-muted-foreground text-sm text-center max-w-[280px] leading-relaxed"
+        className="text-navy200 text-center"
+        style={{
+          fontFamily: 'Nunito_600SemiBold',
+          fontSize: 14,
+          lineHeight: 20,
+          maxWidth: 280,
+        }}
       >
         {message}
       </Text>
-      <Pressable
+      <PushButton
+        variant="primary"
+        size="md"
         onPress={onBack}
-        role="button"
         accessibilityLabel="Back"
-        className="items-center justify-center rounded-full bg-primary px-7 py-3 active:bg-primary/90"
       >
-        <Text className="font-body text-primary-foreground text-base font-bold">
-          Back
-        </Text>
-      </Pressable>
+        Back
+      </PushButton>
     </View>
   );
 }
