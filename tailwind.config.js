@@ -48,8 +48,28 @@ module.exports = {
         },
       },
       fontFamily: {
-        display: [tokens.fonts.display, 'serif'],
+        // The prototype swaps Fraunces (was display) with Nunito. Fraunces is
+        // now a serif accent reserved for year numbers; JetBrains Mono is the
+        // technical-microcopy face.
+        display: [tokens.fonts.display, 'sans-serif'],
         body: [tokens.fonts.body, 'sans-serif'],
+        serif: [tokens.fonts.serif, 'serif'],
+        mono: [tokens.fonts.mono, 'monospace'],
+      },
+      boxShadow: {
+        // Pushable button lifts (Duolingo-style) — the 5px solid colored
+        // shadow that collapses to 1px on press. Mirrors `--vd-btn-lift` /
+        // `--vd-btn-press` from the prototype CSS.
+        'push-lime': '0 5px 0 0 #4AA802',
+        'push-lime-active': '0 1px 0 0 #4AA802',
+        'push-pink': '0 5px 0 0 #D94E94',
+        'push-pink-active': '0 1px 0 0 #D94E94',
+        'push-gold': '0 5px 0 0 #D9A800',
+        'push-gold-active': '0 1px 0 0 #D9A800',
+        'push-red': '0 5px 0 0 #D93838',
+        'push-red-active': '0 1px 0 0 #D93838',
+        // Card surface — `--vd-shadow-card` from the prototype.
+        card: '0 6px 0 0 rgba(0,0,0,0.35), 0 12px 24px -8px rgba(0,0,0,0.45)',
       },
     },
   },

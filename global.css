@@ -11,47 +11,50 @@
  * mapped onto the brand palette. The :root selector is intentional — we do
  * not switch to light mode in V1, so a single block keeps the mapping
  * compact and obvious.
+ *
+ * Hex anchors mirror `theme/tokens.cjs` and the hi-fi prototype palette in
+ * `docs/design/tocarta.css`.
  */
 :root {
-  /* navy900 — primary surface */
-  --background: 13 20 34;
-  /* navy200 — body text on dark surfaces */
-  --foreground: 168 179 199;
+  /* navy900 #0F172A — primary surface */
+  --background: 15 23 42;
+  /* navy50 #EEF1F8 — high-contrast text on dark surfaces */
+  --foreground: 238 241 248;
 
-  /* lime — primary action / accent */
-  --primary: 200 232 74;
+  /* lime #58CC02 — primary action / accent */
+  --primary: 88 204 2;
   /* navy900 — text on lime buttons */
-  --primary-foreground: 13 20 34;
+  --primary-foreground: 15 23 42;
 
-  /* pink — secondary call-out */
-  --secondary: 236 91 141;
+  /* pink #FF6BB5 — secondary call-out */
+  --secondary: 255 107 181;
   /* navy900 — text on pink */
-  --secondary-foreground: 13 20 34;
+  --secondary-foreground: 15 23 42;
 
-  /* navy700 — muted surfaces (cards, sheets, dividers' parents) */
-  --muted: 26 31 46;
-  /* navy200 — muted/secondary text */
-  --muted-foreground: 168 179 199;
+  /* navy700 #1F2D54 — muted surfaces (cards, sheets, dividers' parents) */
+  --muted: 31 45 84;
+  /* navy400 #6B7BA3 — muted/secondary text */
+  --muted-foreground: 107 123 163;
 
-  /* gold — accent for highlights */
-  --accent: 212 168 87;
+  /* gold #FFC800 — accent for highlights */
+  --accent: 255 200 0;
   /* navy900 — text on gold */
-  --accent-foreground: 13 20 34;
+  --accent-foreground: 15 23 42;
 
-  /* red — destructive intent */
-  --destructive: 239 68 68;
-  /* white-ish (navy200 stays readable on red too) */
-  --destructive-foreground: 168 179 199;
+  /* red #FF4B4B — destructive intent */
+  --destructive: 255 75 75;
+  /* navy50 — readable text on red */
+  --destructive-foreground: 238 241 248;
 
-  /* navy500 — subtle borders on dark surfaces */
-  --border: 42 51 68;
-  /* navy500 — input outlines */
-  --input: 42 51 68;
+  /* navy600 #2A3D6E — subtle borders on dark surfaces */
+  --border: 42 61 110;
+  /* navy800 #16213F — input outlines */
+  --input: 22 33 63;
   /* lime — focus rings (matches primary) */
-  --ring: 200 232 74;
+  --ring: 88 204 2;
 
-  /* navy700 — card surface above background */
-  --card: 26 31 46;
-  /* navy200 — text on cards */
-  --card-foreground: 168 179 199;
+  /* navy800 #16213F — card surface above background */
+  --card: 22 33 63;
+  /* navy50 — text on cards */
+  --card-foreground: 238 241 248;
 }
