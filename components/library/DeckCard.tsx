@@ -1,7 +1,13 @@
-import { Pressable, View } from 'react-native';
+// DeckCard — list item on the Library home. Mirrors the prototype's
+// `DeckCard` in docs/design/screens.jsx: a Surface with a status pill on
+// top, the deck name in Nunito 900 18px, and a meta row with the year range
+// in Fraunces. The accent border tints red when tracks were dropped.
+import { View } from 'react-native';
 
+import { Dot } from '@/components/ui/dot';
+import { Pill } from '@/components/ui/pill';
+import { Surface, type SurfaceAccent } from '@/components/ui/surface';
 import { Text } from '@/components/ui/text';
-import { cn } from '@/lib/utils';
 import type { Card, Deck } from '@/lib/types';
 
 export type DeckStatus =
@@ -24,29 +30,6 @@ function deckStatus(_deck: Deck): DeckStatus {
   return { kind: 'ready' };
 }
 
-function statusLabel(status: DeckStatus): string {
-  switch (status.kind) {
-    case 'ready':
-      return 'Ready';
-    case 'resolving':
-      return `Resolving · ${status.percent}%`;
-    case 'dropped':
-      return `${status.count} dropped`;
-  }
-}
-
-const STATUS_PILL_CLASSES: Record<DeckStatus['kind'], string> = {
-  ready: 'bg-primary',
-  resolving: 'bg-gold',
-  dropped: 'bg-red',
-};
-
-const STATUS_TEXT_CLASSES: Record<DeckStatus['kind'], string> = {
-  ready: 'text-primary-foreground',
-  resolving: 'text-navy900',
-  dropped: 'text-navy900',
-};
-
 function cardCountLabel(count: number): string {
   return count === 1 ? '1 card' : `${count} cards`;
 }
@@ -65,42 +48,106 @@ function yearRangeLabel(cards: Card[]): string {
   return `${min} ${EM_DASH} ${max}`;
 }
 
+function StatusPill({ status }: { status: DeckStatus }) {
+  switch (status.kind) {
+    case 'ready':
+      return (
+        <Pill tone="lime">
+          <Dot color="lime" />
+          <Text
+            className="font-display text-limeL text-[11px]"
+            style={{
+              fontFamily: 'Nunito_800ExtraBold',
+              letterSpacing: 1.4,
+              textTransform: 'uppercase',
+            }}
+          >
+            Ready
+          </Text>
+        </Pill>
+      );
+    case 'resolving':
+      return (
+        <Pill tone="gold">
+          <Dot color="gold" pulse />
+          <Text
+            className="font-display text-gold text-[11px]"
+            style={{
+              fontFamily: 'Nunito_800ExtraBold',
+              letterSpacing: 1.4,
+              textTransform: 'uppercase',
+            }}
+          >
+            Resolving · {status.percent}%
+          </Text>
+        </Pill>
+      );
+    case 'dropped':
+      return (
+        <Pill tone="red">
+          <Dot color="red" />
+          <Text
+            className="font-display text-red text-[11px]"
+            style={{
+              fontFamily: 'Nunito_800ExtraBold',
+              letterSpacing: 1.4,
+              textTransform: 'uppercase',
+            }}
+          >
+            {status.count} dropped
+          </Text>
+        </Pill>
+      );
+  }
+}
+
+function statusAccent(status: DeckStatus): SurfaceAccent {
+  switch (status.kind) {
+    case 'dropped':
+      return 'red';
+    case 'resolving':
+      return 'gold';
+    case 'ready':
+    default:
+      return 'default';
+  }
+}
+
 export function DeckCard({ deck, onPress, onLongPress, className }: DeckCardProps) {
   const status = deckStatus(deck);
+  const yearRange = yearRangeLabel(deck.cards);
   return (
-    <Pressable
+    <Surface
+      accent={statusAccent(status)}
       onPress={onPress}
       onLongPress={onLongPress}
-      role="button"
       accessibilityLabel={`Deck ${deck.name}`}
-      className={cn(
-        'rounded-xl border border-navy500 bg-navy700 p-5 active:bg-navy700/80',
-        className,
-      )}
+      className={className}
     >
-      <View className="flex-row items-start justify-between gap-3">
-        <Text className="font-display text-foreground text-2xl flex-1" numberOfLines={2}>
+      <View className="gap-2">
+        <View className="flex-row flex-wrap items-center">
+          <StatusPill status={status} />
+        </View>
+        <Text
+          className="font-display text-foreground text-lg"
+          style={{
+            fontFamily: 'Nunito_900Black',
+            fontSize: 18,
+            letterSpacing: -0.18,
+            lineHeight: 21,
+          }}
+          numberOfLines={2}
+        >
           {deck.name}
         </Text>
-        <View className={cn('rounded-full px-2.5 py-1', STATUS_PILL_CLASSES[status.kind])}>
-          <Text
-            className={cn(
-              'font-body text-xs font-bold uppercase tracking-wide',
-              STATUS_TEXT_CLASSES[status.kind],
-            )}
-          >
-            {statusLabel(status)}
+        <View className="flex-row items-center">
+          <Text className="font-display font-bold text-navy200 text-xs">
+            {cardCountLabel(deck.cards.length)}
+            <Text className="text-navy600">{'  ·  '}</Text>
+            <Text className="font-serif text-navy50">{yearRange}</Text>
           </Text>
         </View>
       </View>
-      <View className="mt-3 flex-row items-baseline justify-between gap-3">
-        <Text className="font-body text-muted-foreground text-sm">
-          {cardCountLabel(deck.cards.length)}
-        </Text>
-        <Text className="font-display text-muted-foreground text-base">
-          {yearRangeLabel(deck.cards)}
-        </Text>
-      </View>
-    </Pressable>
+    </Surface>
   );
 }

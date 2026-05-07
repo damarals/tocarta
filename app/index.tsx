@@ -3,21 +3,21 @@ import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BrandMark } from '@/components/library/BrandMark';
+import { BrandMark } from '@/components/brand/BrandMark';
+import { Wordmark } from '@/components/brand/Wordmark';
 import { DeckCard } from '@/components/library/DeckCard';
 import { EmptyLibrary } from '@/components/library/EmptyLibrary';
 import { FirstLaunchBanner } from '@/components/library/FirstLaunchBanner';
 import { NewDeckFAB } from '@/components/library/NewDeckFAB';
 import { ScanCTA } from '@/components/library/ScanCTA';
-import { Wordmark } from '@/components/library/Wordmark';
+import { Text } from '@/components/ui/text';
 import { deckLibrary } from '@/lib/deck-library';
+import { tokens } from '@/theme/tokens';
 import type { Deck } from '@/lib/types';
 
 type LibraryState =
   | { kind: 'loading' }
   | { kind: 'loaded'; decks: Deck[] };
-
-const LIME = 'rgb(200 232 74)';
 
 export default function LibraryScreen() {
   const router = useRouter();
@@ -84,25 +84,51 @@ export default function LibraryScreen() {
     );
   }, []);
 
+  const deckCount = state.kind === 'loaded' ? state.decks.length : 0;
+
   return (
     <SafeAreaView edges={['top', 'left', 'right']} className="flex-1 bg-background">
-      <View className="flex-row items-center gap-3 px-6 pt-2 pb-4">
-        <BrandMark />
-        <Wordmark className="text-foreground" />
+      <View className="flex-row items-center gap-2.5 px-5 pt-5 pb-4">
+        <BrandMark size={36} />
+        <Wordmark size={22} variant="split" />
       </View>
-      <FirstLaunchBanner />
-      <ScanCTA onPress={() => router.push('/scan')} className="mt-2 mb-4" />
-      {state.kind === 'loading' && (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={LIME} />
+
+      <View className="px-5">
+        <FirstLaunchBanner className="mb-4" />
+      </View>
+
+      <View className="px-5 pb-5">
+        <ScanCTA onPress={() => router.push('/scan')} />
+      </View>
+
+      {state.kind === 'loaded' && state.decks.length > 0 && (
+        <View className="px-5 mt-1 mb-3">
+          <Text
+            className="font-display text-navy400 text-xs"
+            style={{
+              fontFamily: 'Nunito_800ExtraBold',
+              letterSpacing: 1.4,
+              textTransform: 'uppercase',
+            }}
+          >
+            Your decks · {deckCount}
+          </Text>
         </View>
       )}
+
+      {state.kind === 'loading' && (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color={tokens.colors.lime} />
+        </View>
+      )}
+
       {state.kind === 'loaded' && state.decks.length === 0 && <EmptyLibrary />}
+
       {state.kind === 'loaded' && state.decks.length > 0 && (
         <FlatList
           data={state.decks}
           keyExtractor={(deck) => deck.id}
-          contentContainerClassName="px-6 pt-2 pb-32 gap-3"
+          contentContainerClassName="px-5 pb-32 gap-3.5"
           renderItem={({ item }) => (
             <DeckCard
               deck={item}
@@ -112,6 +138,7 @@ export default function LibraryScreen() {
           )}
         />
       )}
+
       <NewDeckFAB onPress={() => router.push('/generate')} />
     </SafeAreaView>
   );
