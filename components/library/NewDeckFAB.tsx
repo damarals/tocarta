@@ -1,7 +1,11 @@
-import { Pressable } from 'react-native';
+// NewDeckFAB — pinned bottom-right shortcut to /generate. Wraps the
+// PushButton primitive so it carries the signature 5px lime push shadow.
+import { Ionicons } from '@expo/vector-icons';
+import { View } from 'react-native';
 
-import { Text } from '@/components/ui/text';
+import { PushButton } from '@/components/ui/push-button';
 import { cn } from '@/lib/utils';
+import { tokens } from '@/theme/tokens';
 
 type NewDeckFABProps = {
   onPress?: () => void;
@@ -10,17 +14,16 @@ type NewDeckFABProps = {
 
 export function NewDeckFAB({ onPress = () => {}, className }: NewDeckFABProps) {
   return (
-    <Pressable
-      onPress={onPress}
-      role="button"
-      accessibilityLabel="New deck"
-      className={cn(
-        'absolute bottom-6 right-6 flex-row items-center gap-2 rounded-full bg-primary px-5 py-4 shadow-lg shadow-black/30 active:bg-primary/90',
-        className
-      )}
-    >
-      <Text className="font-body text-primary-foreground text-2xl leading-none">+</Text>
-      <Text className="font-body text-primary-foreground text-base font-bold">New deck</Text>
-    </Pressable>
+    <View className={cn('absolute bottom-6 right-5', className)}>
+      <PushButton
+        variant="primary"
+        size="lg"
+        onPress={onPress}
+        accessibilityLabel="New deck"
+        icon={<Ionicons name="add" size={20} color={tokens.colors.navy900} />}
+      >
+        New deck
+      </PushButton>
+    </View>
   );
 }
