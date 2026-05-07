@@ -6,9 +6,10 @@
 //   - playback timing (position, isPlaying, didFinish)
 //
 // It is NOT allowed to know — and therefore must NOT look up — the card's
-// artist, title, year, album, or cover art. It does not query the local
-// DeckLibrary, because doing so would put identifying strings one render
-// away from the UI. That's the whole game: scan -> audio -> physical reveal.
+// artist, title, year, album, or cover art. The only DeckLibrary access
+// permitted is a *boolean* existence check at end-of-round to decide whether
+// to route to the import-prompt screen (per Issue #13 / ADR-0013). That check
+// must NEVER feed deck or track strings into UI state on this screen.
 //
 // The audio API is touched only through `AntiSpoilerAudioPlayer`. Direct
 // `expo-av` imports here would be both an ADR-0009 violation and an ESLint
@@ -33,7 +34,14 @@ import {
   type PlaybackStatus,
 } from '@/lib/anti-spoiler-audio-player';
 import { deezerAudioProvider, type AudioProviderError } from '@/lib/audio-provider';
-import { parseCardCode } from '@/lib/card-code-validator';
+import { parseCardCode, type CardCode } from '@/lib/card-code-validator';
+import { deckLibrary } from '@/lib/deck-library';
+import {
+  deckMatchesPointer,
+  reconstructPlaylistUrl,
+  type DeckPointer,
+} from '@/lib/deck-pointer';
+import { wasDeclined } from '@/lib/import-session';
 import { tokens } from '@/theme/tokens';
 
 /**
@@ -62,6 +70,26 @@ export default function PlaybackScreen() {
   // Player and abort flag held in refs so we don't re-create them per render.
   const playerRef = useRef<AntiSpoilerAudioPlayer | null>(null);
   const cancelledRef = useRef(false);
+  // Round-end can be triggered both by natural `onEnded` and by the End-round
+  // button. Route exactly once so we don't double-navigate.
+  const routedRef = useRef(false);
+
+  const routeAfterRound = useCallback(async (): Promise<void> => {
+    if (routedRef.current) return;
+    routedRef.current = true;
+    cancelledRef.current = true;
+    void playerRef.current?.stop();
+
+    const next = await chooseNextRoute(parsed);
+    if (next.kind === 'scan') {
+      router.replace('/scan');
+      return;
+    }
+    router.replace({
+      pathname: '/import',
+      params: { provider: next.pointer.provider, playlistId: next.pointer.playlistId },
+    });
+  }, [parsed, router]);
 
   // Defensive: a working Scanner never navigates here with an invalid code,
   // but the screen still has to handle it gracefully.
@@ -104,6 +132,7 @@ export default function PlaybackScreen() {
     const onEnded = () => {
       if (cancelledRef.current) return;
       setPhase({ kind: 'ended' });
+      void routeAfterRound();
     };
 
     void (async () => {
@@ -129,7 +158,7 @@ export default function PlaybackScreen() {
       void player.stop();
       playerRef.current = null;
     };
-  }, [parsed]);
+  }, [parsed, routeAfterRound]);
 
   const onTogglePause = useCallback(async () => {
     const player = playerRef.current;
@@ -144,10 +173,8 @@ export default function PlaybackScreen() {
   }, [phase]);
 
   const onEndRound = useCallback(() => {
-    cancelledRef.current = true;
-    void playerRef.current?.stop();
-    router.replace('/scan');
-  }, [router]);
+    void routeAfterRound();
+  }, [routeAfterRound]);
 
   return (
     <SafeAreaView edges={['top', 'left', 'right', 'bottom']} className="flex-1 bg-navy900">
@@ -379,4 +406,39 @@ function messageFor(e: unknown): string {
     }
   }
   return 'Audio failed to start. Try again.';
+}
+
+type NextRoute =
+  /** Card had no deck pointer, the deck is already in the Library, or the
+   *  user already declined this pointer this session. Go back to scan. */
+  | { kind: 'scan' }
+  /** Card carried an unknown, supported pointer not yet declined. Offer
+   *  import. */
+  | { kind: 'import'; pointer: DeckPointer };
+
+/**
+ * Decide where Playback should route after the round ends. Pure routing
+ * decision: this function reads the local DeckLibrary to test for a match,
+ * but never returns or surfaces deck/track metadata to the caller — only the
+ * pointer the screen already carries. Errors fall through to `scan` so a
+ * misbehaving DeckLibrary can never trap the user on the playback screen.
+ */
+async function chooseNextRoute(parsed: CardCode | null): Promise<NextRoute> {
+  if (parsed === null) return { kind: 'scan' };
+  if (parsed.provider === undefined || parsed.playlistId === undefined) {
+    return { kind: 'scan' };
+  }
+  const pointer: DeckPointer = {
+    provider: parsed.provider,
+    playlistId: parsed.playlistId,
+  };
+  if (reconstructPlaylistUrl(pointer) === null) return { kind: 'scan' };
+  if (wasDeclined(pointer)) return { kind: 'scan' };
+  try {
+    const decks = await deckLibrary.list();
+    if (decks.some((d) => deckMatchesPointer(d, pointer))) return { kind: 'scan' };
+  } catch {
+    return { kind: 'scan' };
+  }
+  return { kind: 'import', pointer };
 }
