@@ -129,6 +129,7 @@ export default function ReviewScreen() {
           onStartEdit={(isrc) => setEditingIsrc(isrc)}
           onCancelEdit={() => setEditingIsrc(null)}
           onCommitOverride={onCommitOverride}
+          onOpenCard={(isrc) => router.push(`/card/${state.deck.id}/${isrc}`)}
           onExport={() => router.push(`/export/${state.deck.id}`)}
         />
       )}
@@ -143,6 +144,7 @@ type LoadedReviewProps = {
   onStartEdit: (isrc: string) => void;
   onCancelEdit: () => void;
   onCommitOverride: (deckId: string, isrc: string, year: number) => Promise<void>;
+  onOpenCard: (isrc: string) => void;
   onExport: () => void;
 };
 
@@ -153,6 +155,7 @@ function LoadedReview({
   onStartEdit,
   onCancelEdit,
   onCommitOverride,
+  onOpenCard,
   onExport,
 }: LoadedReviewProps): React.ReactElement {
   const rows = useMemo(() => buildRows(deck, drops), [deck, drops]);
@@ -226,6 +229,7 @@ function LoadedReview({
               onStartEdit={() => onStartEdit(item.card.isrc)}
               onCancelEdit={onCancelEdit}
               onCommit={(year) => onCommitOverride(deck.id, item.card.isrc, year)}
+              onOpenCard={() => onOpenCard(item.card.isrc)}
             />
           );
         }}
@@ -240,6 +244,7 @@ type KeptRowProps = {
   onStartEdit: () => void;
   onCancelEdit: () => void;
   onCommit: (year: number) => Promise<void>;
+  onOpenCard: () => void;
 };
 
 function KeptRow({
@@ -248,16 +253,20 @@ function KeptRow({
   onStartEdit,
   onCancelEdit,
   onCommit,
+  onOpenCard,
 }: KeptRowProps): React.ReactElement {
   const displayYear = card.yearOverride ?? card.year;
   const hasOverride = card.yearOverride !== undefined;
 
+  // Row-level tap opens the card preview. The year cell is a separate inner
+  // Pressable that intercepts the press so editing the year stays one tap
+  // away — the OVERRIDE / EDIT caption beneath the year is the affordance.
   return (
     <Pressable
-      onPress={isEditing ? undefined : onStartEdit}
+      onPress={isEditing ? undefined : onOpenCard}
       disabled={isEditing}
       role="button"
-      accessibilityLabel={`Edit year for ${card.artist} — ${card.title}`}
+      accessibilityLabel={`Open card preview for ${card.artist} — ${card.title}`}
       className="rounded-xl border border-navy500 bg-navy700 px-4 py-3 active:bg-navy700/80"
     >
       <View className="flex-row items-center gap-3">
@@ -279,7 +288,13 @@ function KeptRow({
             onCancel={onCancelEdit}
           />
         ) : (
-          <YearDisplay year={displayYear} hasOverride={hasOverride} />
+          <YearDisplay
+            year={displayYear}
+            hasOverride={hasOverride}
+            onPress={onStartEdit}
+            artist={card.artist}
+            title={card.title}
+          />
         )}
       </View>
     </Pressable>
@@ -289,11 +304,26 @@ function KeptRow({
 type YearDisplayProps = {
   year: number | null;
   hasOverride: boolean;
+  onPress: () => void;
+  artist: string;
+  title: string;
 };
 
-function YearDisplay({ year, hasOverride }: YearDisplayProps): React.ReactElement {
+function YearDisplay({
+  year,
+  hasOverride,
+  onPress,
+  artist,
+  title,
+}: YearDisplayProps): React.ReactElement {
   return (
-    <View className="items-end min-w-[64px]">
+    <Pressable
+      onPress={onPress}
+      role="button"
+      accessibilityLabel={`Edit year for ${artist} — ${title}`}
+      hitSlop={8}
+      className="items-end min-w-[64px]"
+    >
       <Text
         className={cn(
           'font-display text-2xl',
@@ -311,7 +341,7 @@ function YearDisplay({ year, hasOverride }: YearDisplayProps): React.ReactElemen
       >
         {hasOverride ? 'OVERRIDE' : 'EDIT'}
       </Text>
-    </View>
+    </Pressable>
   );
 }
 
