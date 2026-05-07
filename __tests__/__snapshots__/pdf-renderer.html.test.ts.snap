@@ -37,7 +37,7 @@ html, body {
   margin: 0;
   padding: 0;
   background: #ffffff;
-  color: #0d1422;
+  color: #0F172A;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
@@ -79,7 +79,7 @@ html, body {
   font-family: 'Fraunces', serif;
   font-weight: 600;
   font-size: 5mm;
-  color: #0d1422;
+  color: #0F172A;
   text-transform: lowercase;
   letter-spacing: 0;
   line-height: 1;
@@ -185,8 +185,8 @@ html, body {
 <div class="crop" style="left:6mm;top:19.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:9mm;top:16.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:201mm;top:19.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:201mm;top:16.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:6mm;top:277.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:9mm;top:277.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:201mm;top:277.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:201mm;top:277.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div>
 </section>
 <section class="page back-page">
-<div class="bleed" style="left:138mm;top:16.5mm;width:66mm;height:66mm;background:#0d1422;"></div>
-<div class="card back" style="left:141mm;top:19.5mm;background:#0d1422;color:#ffffff;">
+<div class="bleed" style="left:138mm;top:16.5mm;width:66mm;height:66mm;background:#0F172A;"></div>
+<div class="card back" style="left:141mm;top:19.5mm;background:#0F172A;color:#ffffff;">
   <div class="back-content">
     <div class="year">1955</div>
     <div class="artist">Chuck Berry</div>
@@ -194,23 +194,23 @@ html, body {
   </div>
 </div>
 <div class="bleed" style="left:72mm;top:16.5mm;width:66mm;height:66mm;background:#e87a3d;"></div>
-<div class="card back" style="left:75mm;top:19.5mm;background:#e87a3d;color:#0d1422;">
+<div class="card back" style="left:75mm;top:19.5mm;background:#e87a3d;color:#0F172A;">
   <div class="back-content">
     <div class="year">1968</div>
     <div class="artist">The Beatles</div>
     <div class="title" style="opacity:0.85;">Hey Jude</div>
   </div>
 </div>
-<div class="bleed" style="left:6mm;top:16.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
-<div class="card back" style="left:9mm;top:19.5mm;background:#ec5b8d;color:#ffffff;">
+<div class="bleed" style="left:6mm;top:16.5mm;width:66mm;height:66mm;background:#FF6BB5;"></div>
+<div class="card back" style="left:9mm;top:19.5mm;background:#FF6BB5;color:#ffffff;">
   <div class="back-content">
     <div class="year">1985</div>
     <div class="artist">a-ha</div>
     <div class="title" style="opacity:0.85;">Take On Me</div>
   </div>
 </div>
-<div class="bleed" style="left:138mm;top:82.5mm;width:66mm;height:66mm;background:#00b8d4;"></div>
-<div class="card back" style="left:141mm;top:85.5mm;background:#00b8d4;color:#0d1422;">
+<div class="bleed" style="left:138mm;top:82.5mm;width:66mm;height:66mm;background:#22D3EE;"></div>
+<div class="card back" style="left:141mm;top:85.5mm;background:#22D3EE;color:#0F172A;">
   <div class="back-content">
     <div class="year">2002</div>
     <div class="artist">Coldplay</div>
@@ -226,55 +226,55 @@ html, body {
   </div>
 </div>
 <div class="bleed" style="left:6mm;top:82.5mm;width:66mm;height:66mm;background:#f97a6b;"></div>
-<div class="card back" style="left:9mm;top:85.5mm;background:#f97a6b;color:#0d1422;">
+<div class="card back" style="left:9mm;top:85.5mm;background:#f97a6b;color:#0F172A;">
   <div class="back-content">
     <div class="year">2024</div>
     <div class="artist">Sabrina Carpenter</div>
     <div class="title" style="opacity:0.85;">Espresso</div>
   </div>
 </div>
-<div class="bleed" style="left:138mm;top:148.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
-<div class="card back" style="left:141mm;top:151.5mm;background:#ec5b8d;color:#ffffff;">
+<div class="bleed" style="left:138mm;top:148.5mm;width:66mm;height:66mm;background:#FF6BB5;"></div>
+<div class="card back" style="left:141mm;top:151.5mm;background:#FF6BB5;color:#ffffff;">
   <div class="back-content">
     <div class="year">1985</div>
     <div class="artist">Madonna</div>
     <div class="title" style="opacity:0.85;">Material Girl</div>
   </div>
 </div>
-<div class="bleed" style="left:72mm;top:148.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
-<div class="card back" style="left:75mm;top:151.5mm;background:#ec5b8d;color:#ffffff;">
+<div class="bleed" style="left:72mm;top:148.5mm;width:66mm;height:66mm;background:#FF6BB5;"></div>
+<div class="card back" style="left:75mm;top:151.5mm;background:#FF6BB5;color:#ffffff;">
   <div class="back-content">
     <div class="year">1985</div>
     <div class="artist">Prince</div>
     <div class="title" style="opacity:0.85;">When Doves Cry</div>
   </div>
 </div>
-<div class="bleed" style="left:6mm;top:148.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
-<div class="card back" style="left:9mm;top:151.5mm;background:#ec5b8d;color:#ffffff;">
+<div class="bleed" style="left:6mm;top:148.5mm;width:66mm;height:66mm;background:#FF6BB5;"></div>
+<div class="card back" style="left:9mm;top:151.5mm;background:#FF6BB5;color:#ffffff;">
   <div class="back-content">
     <div class="year">1985</div>
     <div class="artist">Tears for Fears</div>
     <div class="title" style="opacity:0.85;">Shout</div>
   </div>
 </div>
-<div class="bleed" style="left:138mm;top:214.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
-<div class="card back" style="left:141mm;top:217.5mm;background:#ec5b8d;color:#ffffff;">
+<div class="bleed" style="left:138mm;top:214.5mm;width:66mm;height:66mm;background:#FF6BB5;"></div>
+<div class="card back" style="left:141mm;top:217.5mm;background:#FF6BB5;color:#ffffff;">
   <div class="back-content">
     <div class="year">1985</div>
     <div class="artist">Cyndi Lauper</div>
     <div class="title" style="opacity:0.85;">Time After Time</div>
   </div>
 </div>
-<div class="bleed" style="left:72mm;top:214.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
-<div class="card back" style="left:75mm;top:217.5mm;background:#ec5b8d;color:#ffffff;">
+<div class="bleed" style="left:72mm;top:214.5mm;width:66mm;height:66mm;background:#FF6BB5;"></div>
+<div class="card back" style="left:75mm;top:217.5mm;background:#FF6BB5;color:#ffffff;">
   <div class="back-content">
     <div class="year">1985</div>
     <div class="artist">Wham!</div>
     <div class="title" style="opacity:0.85;">Last Christmas</div>
   </div>
 </div>
-<div class="bleed" style="left:6mm;top:214.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
-<div class="card back" style="left:9mm;top:217.5mm;background:#ec5b8d;color:#ffffff;">
+<div class="bleed" style="left:6mm;top:214.5mm;width:66mm;height:66mm;background:#FF6BB5;"></div>
+<div class="card back" style="left:9mm;top:217.5mm;background:#FF6BB5;color:#ffffff;">
   <div class="back-content">
     <div class="year">1985</div>
     <div class="artist">Queen</div>
@@ -291,8 +291,8 @@ html, body {
 <div class="crop" style="left:6mm;top:19.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:9mm;top:16.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:69mm;top:19.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:69mm;top:16.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:6mm;top:79.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:9mm;top:79.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:69mm;top:79.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:69mm;top:79.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div>
 </section>
 <section class="page back-page">
-<div class="bleed" style="left:138mm;top:16.5mm;width:66mm;height:66mm;background:#0d1422;"></div>
-<div class="card back" style="left:141mm;top:19.5mm;background:#0d1422;color:#ffffff;">
+<div class="bleed" style="left:138mm;top:16.5mm;width:66mm;height:66mm;background:#0F172A;"></div>
+<div class="card back" style="left:141mm;top:19.5mm;background:#0F172A;color:#ffffff;">
   <div class="back-content">
     <div class="year">1956</div>
     <div class="artist">Elvis Presley</div>
