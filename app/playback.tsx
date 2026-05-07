@@ -19,13 +19,18 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Network from 'expo-network';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BarsVisual } from '@/components/playback/BarsVisual';
 import { CalmPulseVisual } from '@/components/playback/CalmPulseVisual';
 import { RingsVisual } from '@/components/playback/RingsVisual';
 import { VinylVisual } from '@/components/playback/VinylVisual';
+import { Dot } from '@/components/ui/dot';
+import { IconButton } from '@/components/ui/icon-button';
+import { IndeterminateBar } from '@/components/ui/indeterminate-bar';
+import { Pill } from '@/components/ui/pill';
+import { PushButton } from '@/components/ui/push-button';
 import { Text } from '@/components/ui/text';
 import {
   configureAudioModeForPlay,
@@ -176,28 +181,39 @@ export default function PlaybackScreen() {
     void routeAfterRound();
   }, [routeAfterRound]);
 
+  const onClose = useCallback(() => {
+    void routeAfterRound();
+  }, [routeAfterRound]);
+
   return (
-    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} className="flex-1 bg-navy900">
-      <View className="flex-1 items-center justify-between px-6 py-8">
-        <TopPills />
-        <View className="items-center gap-8">
-          <Visualisation active={phase.kind === 'playing'} />
-          <CountUpTimer phase={phase} />
-          <ProgressBar paused={phase.kind === 'paused'} />
-        </View>
-        <View className="w-full items-center gap-4">
-          {!isOnline && <OfflineBanner />}
-          {phase.kind === 'error' && <ErrorBanner message={phase.message} />}
-          {phase.kind === 'invalid' && (
-            <Text className="font-body text-foreground text-base">Invalid scan, returning…</Text>
-          )}
-          <Controls
-            phase={phase}
-            disabled={!isOnline || phase.kind === 'invalid' || phase.kind === 'loading'}
-            onTogglePause={onTogglePause}
-            onEndRound={onEndRound}
-          />
-        </View>
+    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} className="flex-1 bg-navy950">
+      <TopBar onClose={onClose} />
+
+      {/* Offline / error banners sit between the chrome and the visual */}
+      <View className="px-5 gap-2">
+        {!isOnline && <OfflineBanner />}
+        {phase.kind === 'error' && <ErrorBanner message={phase.message} />}
+        {phase.kind === 'invalid' && (
+          <Text className="font-display text-foreground text-base text-center">
+            Invalid scan, returning…
+          </Text>
+        )}
+      </View>
+
+      <View className="flex-1 items-center justify-center px-6">
+        <Visualisation active={phase.kind === 'playing'} />
+        <CountUpTimer phase={phase} />
+        <ReassurancePill />
+      </View>
+
+      <View className="w-full px-6 pb-6 gap-4">
+        <IndeterminateBar paused={phase.kind === 'paused' || phase.kind === 'loading'} />
+        <Controls
+          phase={phase}
+          disabled={!isOnline || phase.kind === 'invalid' || phase.kind === 'loading'}
+          onTogglePause={onTogglePause}
+          onEndRound={onEndRound}
+        />
       </View>
     </SafeAreaView>
   );
@@ -217,20 +233,41 @@ function Visualisation({ active }: { active: boolean }) {
   }
 }
 
-function TopPills() {
+function TopBar({ onClose }: { onClose: () => void }) {
   return (
-    <View className="items-center gap-2">
-      <View
-        className="rounded-full px-4 py-2"
-        style={{ backgroundColor: tokens.colors.pink }}
+    <View className="flex-row items-center justify-between px-4 py-3.5">
+      <IconButton
+        size={40}
+        surfaceClass="bg-navy800"
+        shadowColor={tokens.colors.navy950}
+        onPress={onClose}
+        accessibilityLabel="Close playback"
       >
-        <Text className="font-body text-base font-bold" style={{ color: '#fff' }}>
+        <Ionicons name="close" size={20} color="#fff" />
+      </IconButton>
+      <Pill tone="pink">
+        <Dot color="pink" pulse />
+        <Text
+          className="text-pink"
+          style={{
+            fontFamily: 'Nunito_700Bold',
+            fontSize: 11,
+            letterSpacing: 0.44,
+            textTransform: 'uppercase',
+          }}
+        >
           Playing — no peeking
         </Text>
-      </View>
-      <Text className="font-body text-navy200 text-xs">
-        lock screen and notifications hidden
-      </Text>
+      </Pill>
+      <IconButton
+        size={40}
+        surfaceClass="bg-navy800"
+        shadowColor={tokens.colors.navy950}
+        onPress={() => undefined}
+        accessibilityLabel="Volume"
+      >
+        <Ionicons name="volume-medium" size={18} color="#fff" />
+      </IconButton>
     </View>
   );
 }
@@ -244,12 +281,20 @@ function CountUpTimer({ phase }: { phase: Phase }) {
         : 0;
   return (
     <Text
-      className="font-display text-foreground"
+      accessibilityLabel="Elapsed time"
       style={{
+        marginTop: 32,
+        fontFamily: 'Fraunces_900Black',
         fontSize: 80,
+        lineHeight: 80,
+        letterSpacing: -3.2,
+        color: tokens.colors.navy50,
+        textAlign: 'center',
         // tabular-nums keeps the digits from wobbling as seconds tick.
         fontVariant: ['tabular-nums'],
-        lineHeight: 88,
+        textShadowColor: 'rgba(0,0,0,0.4)',
+        textShadowOffset: { width: 0, height: 4 },
+        textShadowRadius: 24,
       }}
     >
       {formatPosition(ms)}
@@ -257,52 +302,27 @@ function CountUpTimer({ phase }: { phase: Phase }) {
   );
 }
 
-function ProgressBar({ paused }: { paused: boolean }) {
-  const translate = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (paused) return;
-    const loop = Animated.loop(
-      Animated.timing(translate, {
-        toValue: 1,
-        duration: 1500,
-        easing: Easing.inOut(Easing.cubic),
-        useNativeDriver: true,
-      }),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [paused, translate]);
-
-  // Indeterminate bar: a gradient slug slides along the track.
+function ReassurancePill() {
   return (
     <View
+      className="flex-row items-center gap-2 mt-6 px-3.5 py-2 rounded-full"
       style={{
-        width: '80%',
-        height: 4,
-        borderRadius: 2,
-        backgroundColor: '#1a1f2e',
-        overflow: 'hidden',
+        backgroundColor: 'rgba(255,107,181,0.08)',
+        borderWidth: 1,
+        borderColor: 'rgba(255,107,181,0.28)',
       }}
     >
-      <Animated.View
+      <Dot color="pink" size={5} />
+      <Text
+        className="text-navy200"
         style={{
-          width: '40%',
-          height: '100%',
-          backgroundColor: tokens.colors.pink,
-          borderRadius: 2,
-          opacity: 0.9,
-          transform: [
-            {
-              translateX: translate.interpolate({
-                inputRange: [0, 1],
-                // From off-left to off-right, in % of bar width.
-                outputRange: ['-100%', '300%'],
-              }),
-            },
-          ],
+          fontFamily: 'Nunito_700Bold',
+          fontSize: 10,
+          letterSpacing: 0.4,
         }}
-      />
+      >
+        lock screen and notifications hidden
+      </Text>
     </View>
   );
 }
@@ -322,36 +342,31 @@ function Controls({
   const pauseDisabled = disabled || (phase.kind !== 'playing' && phase.kind !== 'paused');
 
   return (
-    <View className="w-full items-center gap-3">
-      <Pressable
-        accessibilityLabel={isPlaying ? 'Pause' : 'Resume'}
-        role="button"
-        disabled={pauseDisabled}
+    <View className="flex-row items-center justify-center gap-3">
+      <PushButton
+        variant="ghost"
+        size="md"
         onPress={onTogglePause}
-        style={{
-          width: 88,
-          height: 88,
-          borderRadius: 44,
-          backgroundColor: tokens.colors.lime,
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: pauseDisabled ? 0.4 : 1,
-        }}
+        disabled={pauseDisabled}
+        accessibilityLabel={isPlaying ? 'Pause' : 'Resume'}
+        icon={
+          <Ionicons
+            name={isPlaying ? 'pause' : 'play'}
+            size={16}
+            color={tokens.colors.navy200}
+          />
+        }
       >
-        <Ionicons
-          name={isPlaying ? 'pause' : 'play'}
-          size={36}
-          color={tokens.colors.navy900}
-        />
-      </Pressable>
-      <Pressable
+        {isPlaying ? 'Pause' : 'Resume'}
+      </PushButton>
+      <PushButton
+        variant="secondary"
+        size="md"
         onPress={onEndRound}
         accessibilityLabel="End round"
-        role="button"
-        className="rounded-full border border-border px-6 py-3 active:bg-navy700"
       >
-        <Text className="font-body text-foreground text-base font-bold">End round</Text>
-      </Pressable>
+        End round
+      </PushButton>
     </View>
   );
 }
@@ -359,10 +374,17 @@ function Controls({
 function OfflineBanner() {
   return (
     <View
-      className="w-full rounded-md px-4 py-3"
-      style={{ backgroundColor: tokens.colors.red }}
+      accessibilityLabel="Offline"
+      className="rounded-2xl border-[1.5px] border-red bg-red/15 p-4"
     >
-      <Text className="font-body text-base font-bold" style={{ color: '#fff' }}>
+      <Text
+        className="text-red"
+        style={{
+          fontFamily: 'Nunito_900Black',
+          fontSize: 14,
+          lineHeight: 18,
+        }}
+      >
         No internet — can&apos;t load this card. Reconnect to keep playing.
       </Text>
     </View>
@@ -372,10 +394,17 @@ function OfflineBanner() {
 function ErrorBanner({ message }: { message: string }) {
   return (
     <View
-      className="w-full rounded-md px-4 py-3"
-      style={{ backgroundColor: tokens.colors.red }}
+      accessibilityLabel="Playback error"
+      className="rounded-2xl border-[1.5px] border-red bg-red/15 p-4"
     >
-      <Text className="font-body text-base font-bold" style={{ color: '#fff' }}>
+      <Text
+        className="text-red"
+        style={{
+          fontFamily: 'Nunito_900Black',
+          fontSize: 14,
+          lineHeight: 18,
+        }}
+      >
         {message}
       </Text>
     </View>
