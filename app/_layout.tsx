@@ -12,6 +12,7 @@ import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import '../global.css';
 
@@ -37,9 +38,9 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <SafeAreaProvider>
       <Slot />
       <StatusBar style="light" />
-    </>
+    </SafeAreaProvider>
   );
 }
