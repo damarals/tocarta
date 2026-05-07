@@ -13,6 +13,7 @@ import {
   type ExtractError,
   type ExtractResult,
 } from '@/lib/playlist-extractor';
+import { setPostGenerationDrops } from '@/lib/post-generation-store';
 import { createRateLimiter } from '@/lib/rate-limiter';
 import { createYearResolver, type YearResolver } from '@/lib/year-resolver';
 
@@ -36,7 +37,6 @@ type LogLine = {
 
 type ResolvingState =
   | { kind: 'working'; progress: ProgressView; log: LogLine[] }
-  | { kind: 'finishing'; skippedCount: number }
   | { kind: 'error'; message: string };
 
 function isExtractError(value: unknown): value is ExtractError {
@@ -147,15 +147,8 @@ export default function ResolvingScreen() {
         await deckLibrary.save(result.deck);
         if (cancelled) return;
 
-        const skipped = result.droppedTracks.length;
-        if (skipped > 0) {
-          setState({ kind: 'finishing', skippedCount: skipped });
-          setTimeout(() => {
-            if (!cancelled) router.replace('/');
-          }, 1_400);
-        } else {
-          router.replace('/');
-        }
+        setPostGenerationDrops(result.deck.id, result.droppedTracks);
+        router.replace(`/review/${result.deck.id}`);
       } catch (err) {
         if (cancelled) return;
         if ((err as { name?: string }).name === 'AbortError') return;
@@ -176,18 +169,6 @@ export default function ResolvingScreen() {
     <SafeAreaView edges={['left', 'right', 'bottom']} className="flex-1 bg-background">
       <View className="flex-1 px-6 py-6 gap-6">
         {state.kind === 'working' && <WorkingView progress={state.progress} log={state.log} />}
-        {state.kind === 'finishing' && (
-          <View className="flex-1 items-center justify-center gap-3">
-            <Text className="font-display text-foreground text-2xl text-center">
-              Saved
-            </Text>
-            <Text className="font-body text-muted-foreground text-base text-center">
-              {state.skippedCount === 1
-                ? '1 track was skipped.'
-                : `${state.skippedCount} tracks were skipped.`}
-            </Text>
-          </View>
-        )}
         {state.kind === 'error' && (
           <View className="flex-1 items-center justify-center gap-4">
             <Text className="font-display text-foreground text-2xl text-center">
