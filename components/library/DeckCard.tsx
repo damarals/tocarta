@@ -18,7 +18,7 @@ type DeckCardProps = {
 
 const EM_DASH = '—';
 
-const cardYear = (card: Card): number => card.yearOverride ?? card.year;
+const cardYear = (card: Card): number | null => card.yearOverride ?? card.year;
 
 function deckStatus(_deck: Deck): DeckStatus {
   return { kind: 'ready' };
@@ -52,14 +52,15 @@ function cardCountLabel(count: number): string {
 }
 
 function yearRangeLabel(cards: Card[]): string {
-  if (cards.length === 0) return EM_DASH;
-  let min = cardYear(cards[0]);
-  let max = min;
-  for (let i = 1; i < cards.length; i++) {
-    const y = cardYear(cards[i]);
-    if (y < min) min = y;
-    if (y > max) max = y;
+  let min: number | null = null;
+  let max: number | null = null;
+  for (const card of cards) {
+    const y = cardYear(card);
+    if (y === null) continue;
+    if (min === null || y < min) min = y;
+    if (max === null || y > max) max = y;
   }
+  if (min === null || max === null) return EM_DASH;
   if (min === max) return String(min);
   return `${min} ${EM_DASH} ${max}`;
 }
