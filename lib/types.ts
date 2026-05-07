@@ -2,7 +2,7 @@ export type Card = {
   isrc: string;
   artist: string;
   title: string;
-  year: number;
+  year: number | null;
   yearOverride?: number;
 };
 
