@@ -1,0 +1,306 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PdfRenderer.toHtml produces a deterministic HTML document for the 13-card fixture 1`] = `
+"<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Hits dos Anos 80</title>
+<meta name="author" content="Tocarta" />
+<meta name="subject" content="Music year-guess card deck" />
+<meta name="keywords" content="tocarta,music,cards" />
+<style>
+@font-face {
+  font-family: 'Fraunces';
+  font-weight: 600;
+  font-style: normal;
+  src: url('https://fonts.gstatic.com/s/fraunces/v34/6NUh8FyLNQOQZAnv9bYM3KSU.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 400;
+  font-style: normal;
+  src: url('https://fonts.gstatic.com/s/nunito/v26/XRXV3I6Li01BKofINeaB.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 700;
+  font-style: normal;
+  src: url('https://fonts.gstatic.com/s/nunito/v26/XRXW3I6Li01BKofA6sKUYevN.woff2') format('woff2');
+}
+@page {
+  size: 210mm 297mm;
+  margin: 0;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  color: #0d1422;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.page {
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  overflow: hidden;
+  page-break-after: always;
+}
+.page:last-child { page-break-after: auto; }
+.front-page { background: #ffffff; }
+.back-page { background: #ffffff; }
+.bleed {
+  position: absolute;
+}
+.card {
+  position: absolute;
+  width: 60mm;
+  height: 60mm;
+  overflow: hidden;
+}
+.card.front {
+  background: #ffffff;
+}
+.card.front .qr {
+  position: absolute;
+  left: 12mm;
+  top: 8mm;
+  width: 36mm;
+  height: 36mm;
+}
+.card.front .wordmark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 44.5mm;
+  text-align: center;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 5mm;
+  color: #0d1422;
+  text-transform: lowercase;
+  letter-spacing: 0;
+  line-height: 1;
+}
+.card.back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4mm;
+}
+.back-content {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1mm;
+}
+.year {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 21mm;
+  line-height: 1;
+}
+.artist {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 4mm;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 400;
+  font-size: 3.5mm;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.crop {
+  position: absolute;
+}
+</style>
+</head>
+<body>
+<section class="page front-page">
+<div class="card front" style="left:9mm;top:19.5mm;" data-payload="USRC11955001:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m1%200h2m1%200h2m2%200h1m2%200h7M0%201.5h1m5%200h1m1%200h1m1%200h3m1%200h1m3%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m3%200h2m1%200h1m2%200h1m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m1%200h4m6%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m2%200h1m1%200h5m2%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m2%200h4m1%200h3m1%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M8%207.5h1m4%200h2M0%208.5h1m1%200h2m1%200h3m1%200h2m1%200h4m2%200h1m2%200h1m1%200h2M0%209.5h1m2%200h1m1%200h1m2%200h1m1%200h2m3%200h1m7%200h2M1%2010.5h4m1%200h3m2%200h2m1%200h1m1%200h1m2%200h1m2%200h3M0%2011.5h2m1%200h1m1%200h1m3%200h2m1%200h3m1%200h3m1%200h1m1%200h2M2%2012.5h1m2%200h2m1%200h1m7%200h1m1%200h4M4%2013.5h1m2%200h1m3%200h1m1%200h1m1%200h1m1%200h2m1%200h1m1%200h3M1%2014.5h3m2%200h4m2%200h1m1%200h2m2%200h2m1%200h1M0%2015.5h1m3%200h2m1%200h2m1%200h1m1%200h2m1%200h4m2%200h2M5%2016.5h3m3%200h1m3%200h6M8%2017.5h3m1%200h2m1%200h2m3%200h2m1%200h1M0%2018.5h7m1%200h1m2%200h2m3%200h1m1%200h1m1%200h2m1%200h2M0%2019.5h1m5%200h1m1%200h2m2%200h1m3%200h1m3%200h4M0%2020.5h1m1%200h3m1%200h1m3%200h4m2%200h7m1%200h1M0%2021.5h1m1%200h3m1%200h1m1%200h1m3%200h4m5%200h1m2%200h1M0%2022.5h1m1%200h3m1%200h1m1%200h6m1%200h1m1%200h1m2%200h1m2%200h1M0%2023.5h1m5%200h1m8%200h2m1%200h1m2%200h1m2%200h1M0%2024.5h7m1%200h1m1%200h1m1%200h1m1%200h2m2%200h1m2%200h2m1%200h1%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="card front" style="left:75mm;top:19.5mm;" data-payload="USRC11968001:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m1%200h1m3%200h3m3%200h7M0%201.5h1m5%200h1m2%200h2m2%200h2m3%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m2%200h2m1%200h1m2%200h2m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m1%200h1m1%200h1m1%200h1m3%200h1m1%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m1%200h1m5%200h2m2%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m1%200h1m2%200h2m2%200h1m2%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M8%207.5h4m1%200h1m1%200h2M0%208.5h1m3%200h1m1%200h4m2%200h2m1%200h7m2%200h1M0%209.5h1m1%200h2m1%200h1m2%200h3m1%200h3m4%200h3m1%200h2M0%2010.5h1m1%200h1m2%200h4m2%200h1m3%200h1m3%200h3m1%200h2M0%2011.5h1m2%200h1m1%200h1m2%200h3m1%200h1m1%200h3m1%200h5M0%2012.5h3m1%200h1m1%200h1m1%200h2m1%200h1m1%200h4m1%200h1M0%2013.5h2m1%200h1m1%200h1m2%200h3m1%200h1m2%200h1m3%200h2m1%200h1M2%2014.5h1m2%200h2m1%200h1m1%200h5m2%200h2m4%200h1M3%2015.5h1m3%200h1m3%200h1m1%200h1m1%200h1m5%200h1m1%200h2M0%2016.5h9m1%200h1m1%200h2m1%200h6m2%200h2M8%2017.5h3m2%200h4m3%200h5M0%2018.5h7m1%200h3m5%200h1m1%200h1m1%200h3M0%2019.5h1m5%200h1m2%200h1m2%200h1m1%200h3m3%200h1m2%200h1M0%2020.5h1m1%200h3m1%200h1m1%200h4m1%200h2m1%200h6M0%2021.5h1m1%200h3m1%200h1m2%200h1m2%200h1m6%200h2m1%200h1m1%200h1M0%2022.5h1m1%200h3m1%200h1m3%200h5m1%200h2m4%200h2M0%2023.5h1m5%200h1m2%200h3m1%200h1m2%200h3m3%200h3M0%2024.5h7m1%200h3m1%200h2m4%200h2m2%200h1m1%200h1%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="card front" style="left:141mm;top:19.5mm;" data-payload="USRC11985001:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m1%200h2m1%200h1m1%200h4m1%200h7M0%201.5h1m5%200h1m1%200h2m3%200h2m3%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m1%200h1m1%200h2m1%200h1m1%200h2m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m2%200h1m1%200h2m1%200h3m1%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m1%200h1m1%200h1m2%200h2m3%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m3%200h1m1%200h5m1%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M9%207.5h1m1%200h1m2%200h1M0%208.5h1m2%200h7m2%200h3m2%200h1m2%200h1m1%200h3M0%209.5h4m4%200h1m2%200h1m2%200h1m1%200h1m3%200h5M2%2010.5h1m3%200h2m2%200h3m1%200h3m1%200h2m1%200h3M0%2011.5h1m1%200h2m4%200h2m1%200h2m1%200h1m1%200h1m2%200h2m1%200h1m1%200h1M6%2012.5h4m3%200h2m2%200h2m2%200h3M0%2013.5h1m7%200h3m1%200h1m2%200h1m3%200h2m1%200h1M0%2014.5h2m1%200h4m7%200h1m4%200h1m4%200h1M0%2015.5h1m2%200h1m1%200h1m2%200h1m3%200h3m2%200h2m1%200h1M0%2016.5h1m1%200h1m1%200h3m2%200h1m1%200h2m3%200h6m2%200h1M8%2017.5h1m1%200h2m3%200h2m3%200h2m2%200h1M0%2018.5h7m1%200h3m1%200h3m1%200h1m1%200h1m1%200h3m1%200h1M0%2019.5h1m5%200h1m1%200h1m2%200h1m1%200h1m2%200h1m3%200h3m1%200h1M0%2020.5h1m1%200h3m1%200h1m1%200h2m1%200h1m1%200h1m1%200h7M0%2021.5h1m1%200h3m1%200h1m1%200h1m1%200h1m1%200h2m2%200h1m3%200h1m3%200h1M0%2022.5h1m1%200h3m1%200h1m2%200h1m1%200h1m1%200h1m3%200h2m1%200h2m1%200h2M0%2023.5h1m5%200h1m2%200h1m1%200h3m1%200h3m1%200h1m1%200h1m1%200h1M0%2024.5h7m1%200h1m2%200h3m1%200h7m1%200h2%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="card front" style="left:9mm;top:85.5mm;" data-payload="USRC12002001:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m2%200h1m1%200h2m1%200h1m1%200h1m1%200h7M0%201.5h1m5%200h1m1%200h1m3%200h2m1%200h1m2%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m2%200h4m1%200h1m1%200h1m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m2%200h1m3%200h1m4%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m1%200h1m4%200h4m1%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m3%200h1m1%200h1m1%200h1m3%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M10%207.5h3m2%200h1M0%208.5h1m1%200h1m1%200h1m1%200h1m3%200h2m3%200h1m4%200h1m2%200h1M3%209.5h1m3%200h2m1%200h1m1%200h2m1%200h1m1%200h3M1%2010.5h1m4%200h2m2%200h2m2%200h1m2%200h3M0%2011.5h1m3%200h1m2%200h2m2%200h5m2%200h1m1%200h2M0%2012.5h3m3%200h1m1%200h1m2%200h1m2%200h2m2%200h2m2%200h1M1%2013.5h2m6%200h1m1%200h1m2%200h1m2%200h3m1%200h4M0%2014.5h1m2%200h6m4%200h1m1%200h1m4%200h2m2%200h1M1%2015.5h1m3%200h1m1%200h2m2%200h1m3%200h2m2%200h1m2%200h3M0%2016.5h1m1%200h3m1%200h1m1%200h3m1%200h1m2%200h6m1%200h3M8%2017.5h2m1%200h3m2%200h1m3%200h2M0%2018.5h7m2%200h4m1%200h3m1%200h1m1%200h1m1%200h3M0%2019.5h1m5%200h1m5%200h5m3%200h2m1%200h1M0%2020.5h1m1%200h3m1%200h1m1%200h2m1%200h1m2%200h1m1%200h5m1%200h1M0%2021.5h1m1%200h3m1%200h1m2%200h1m1%200h1m2%200h2m1%200h3m1%200h1m1%200h1M0%2022.5h1m1%200h3m1%200h1m1%200h3m2%200h1m1%200h2m1%200h1m1%200h1m1%200h1m1%200h1M0%2023.5h1m5%200h1m3%200h2m5%200h4m2%200h2M0%2024.5h7m1%200h1m1%200h1m1%200h1m3%200h1m1%200h1m2%200h2m1%200h1%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="card front" style="left:75mm;top:85.5mm;" data-payload="USRC12018001:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m1%200h1m1%200h2m1%200h4m1%200h7M0%201.5h1m5%200h1m1%200h4m1%200h2m3%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m1%200h2m2%200h2m1%200h2m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m2%200h2m1%200h1m1%200h3m1%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m1%200h1m3%200h3m3%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m4%200h1m1%200h4m1%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M9%207.5h1m2%200h1m1%200h1M0%208.5h1m2%200h7m1%200h1m1%200h2m2%200h1m2%200h1m1%200h3M0%209.5h2m1%200h3m1%200h3m1%200h2m1%200h1m1%200h1m3%200h5M2%2010.5h2m2%200h1m1%200h2m4%200h3m1%200h2m1%200h3M0%2011.5h1m3%200h2m2%200h3m1%200h1m1%200h1m1%200h1m2%200h2m1%200h1m1%200h1M0%2012.5h1m1%200h1m1%200h1m1%200h6m1%200h2m2%200h2m2%200h3M0%2013.5h1m2%200h2m2%200h2m1%200h1m1%200h1m2%200h1m3%200h2m1%200h1M0%2014.5h2m1%200h2m1%200h2m2%200h1m3%200h1m4%200h1m4%200h1M0%2015.5h1m1%200h3m2%200h2m3%200h3m2%200h2m1%200h2M0%2016.5h1m1%200h1m2%200h3m1%200h1m1%200h2m3%200h6m2%200h1M8%2017.5h4m3%200h2m3%200h1m1%200h1m1%200h1M0%2018.5h7m1%200h1m1%200h1m1%200h3m1%200h1m1%200h1m1%200h3m1%200h1M0%2019.5h1m5%200h1m1%200h1m2%200h1m1%200h1m2%200h1m3%200h1m3%200h1M0%2020.5h1m1%200h3m1%200h1m1%200h1m2%200h1m1%200h1m1%200h8M0%2021.5h1m1%200h3m1%200h1m1%200h3m1%200h2m2%200h1m3%200h1m3%200h1M0%2022.5h1m1%200h3m1%200h1m2%200h3m1%200h1m3%200h2m1%200h1m2%200h2M0%2023.5h1m5%200h1m2%200h1m1%200h3m1%200h3m3%200h3M0%2024.5h7m1%200h1m1%200h4m1%200h5m1%200h1m1%200h2%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="card front" style="left:141mm;top:85.5mm;" data-payload="USRC12024001:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m1%200h3m1%200h5m1%200h7M0%201.5h1m5%200h1m1%200h1m4%200h2m3%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m1%200h1m4%200h1m1%200h2m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m3%200h1m1%200h1m1%200h3m1%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m1%200h1m2%200h4m3%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m3%200h1m2%200h4m1%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M10%207.5h1m3%200h1M0%208.5h1m2%200h7m3%200h2m2%200h1m2%200h1m1%200h3M0%209.5h2m1%200h3m3%200h1m1%200h1m2%200h1m1%200h1m3%200h5M0%2010.5h1m1%200h1m1%200h1m1%200h1m1%200h1m2%200h2m1%200h3m1%200h2m1%200h3M1%2011.5h1m2%200h1m2%200h2m1%200h3m1%200h1m1%200h1m2%200h2m1%200h1m1%200h1M2%2012.5h2m1%200h4m1%200h2m1%200h2m2%200h2m2%200h3M0%2013.5h2m5%200h3m2%200h1m2%200h1m3%200h2m1%200h1M0%2014.5h3m2%200h2m2%200h1m4%200h1m4%200h1m4%200h1M0%2015.5h1m2%200h2m3%200h1m1%200h1m1%200h3m2%200h2m1%200h2M0%2016.5h1m2%200h1m2%200h2m1%200h4m3%200h6m2%200h1M8%2017.5h1m2%200h1m3%200h2m3%200h1m1%200h1m1%200h1M0%2018.5h7m1%200h1m1%200h1m1%200h3m1%200h1m1%200h1m1%200h3m1%200h1M0%2019.5h1m5%200h1m1%200h1m2%200h1m1%200h1m2%200h1m3%200h1m3%200h1M0%2020.5h1m1%200h3m1%200h1m1%200h4m1%200h1m1%200h6m1%200h1M0%2021.5h1m1%200h3m1%200h1m1%200h2m2%200h2m2%200h1m3%200h1m1%200h1m1%200h1M0%2022.5h1m1%200h3m1%200h1m2%200h1m1%200h1m1%200h1m3%200h2m1%200h2m1%200h2M0%2023.5h1m5%200h1m2%200h1m1%200h3m1%200h3m5%200h1M0%2024.5h7m1%200h1m2%200h3m1%200h4m1%200h1m2%200h2%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="card front" style="left:9mm;top:151.5mm;" data-payload="USRC11985002:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m1%200h4m1%200h4m1%200h7M0%201.5h1m5%200h1m4%200h1m6%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m1%200h1m1%200h1m1%200h5m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m2%200h2m4%200h1m2%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m5%200h1m1%200h1m1%200h1m1%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m1%200h1m2%200h5m2%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M11%207.5h1m1%200h1M0%208.5h1m1%200h1m3%200h2m2%200h2m1%200h1m5%200h1m2%200h1m1%200h1M0%209.5h5m7%200h1m5%200h1m2%200h1m1%200h1M0%2010.5h1m2%200h4m1%200h1m3%200h4m2%200h1m2%200h1m1%200h1M2%2011.5h1m1%200h2m1%200h3m1%200h2m1%200h1m2%200h4m2%200h1M0%2012.5h2m1%200h1m2%200h1m3%200h1m2%200h2m2%200h2m1%200h4M1%2013.5h1m2%200h1m2%200h3m3%200h3m2%200h2m2%200h1m1%200h1M0%2014.5h3m1%200h3m1%200h2m1%200h1m5%200h1m1%200h2m2%200h2M5%2015.5h1m3%200h2m2%200h1m2%200h2m4%200h1m1%200h1M0%2016.5h4m2%200h3m1%200h4m2%200h7m1%200h1M8%2017.5h1m1%200h1m1%200h1m2%200h2m3%200h4M0%2018.5h7m1%200h1m1%200h1m1%200h3m1%200h1m1%200h1m1%200h3m1%200h1M0%2019.5h1m5%200h1m4%200h2m1%200h1m1%200h1m3%200h3M0%2020.5h1m1%200h3m1%200h1m2%200h2m2%200h9m1%200h1M0%2021.5h1m1%200h3m1%200h1m3%200h1m2%200h2m3%200h1m3%200h1M0%2022.5h1m1%200h3m1%200h1m1%200h1m1%200h2m4%200h9M0%2023.5h1m5%200h1m2%200h2m2%200h1m1%200h1m2%200h2m1%200h2m1%200h1M0%2024.5h7m1%200h1m2%200h3m1%200h7m1%200h2%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="card front" style="left:75mm;top:151.5mm;" data-payload="USRC11985003:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m5%200h1m2%200h1m2%200h7M0%201.5h1m5%200h1m3%200h1m4%200h1m2%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m1%200h2m2%200h1m2%200h1m2%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m1%200h4m6%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m1%200h1m4%200h1m4%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m1%200h2m1%200h1m1%200h2m3%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M8%207.5h2m1%200h1m1%200h1m1%200h1M0%208.5h1m1%200h5m3%200h2m2%200h1m1%200h1m1%200h5M0%209.5h2m1%200h1m1%200h1m1%200h1m1%200h3m3%200h1m7%200h2M1%2010.5h2m2%200h2m1%200h1m1%200h2m3%200h8M3%2011.5h1m1%200h1m1%200h3m1%200h2m1%200h2m1%200h1m1%200h3m1%200h2M0%2012.5h1m1%200h2m1%200h2m3%200h1m5%200h1m1%200h4M0%2013.5h1m1%200h2m1%200h1m2%200h1m1%200h1m1%200h3m4%200h1m1%200h2M0%2014.5h1m1%200h3m1%200h2m1%200h2m2%200h2m1%200h1m5%200h1m1%200h1M0%2015.5h1m8%200h1m2%200h2m1%200h4m2%200h2M0%2016.5h1m1%200h5m1%200h1m3%200h1m1%200h1m1%200h6m1%200h2M8%2017.5h1m7%200h1m3%200h1m1%200h3M0%2018.5h7m2%200h4m3%200h1m1%200h1m1%200h2m1%200h2M0%2019.5h1m5%200h1m1%200h1m2%200h1m2%200h3m3%200h1m1%200h1m1%200h1M0%2020.5h1m1%200h3m1%200h1m1%200h2m1%200h1m3%200h8M0%2021.5h1m1%200h3m1%200h1m1%200h3m1%200h4m5%200h2m1%200h1M0%2022.5h1m1%200h3m1%200h1m1%200h1m4%200h2m3%200h1m2%200h1m2%200h1M0%2023.5h1m5%200h1m2%200h1m2%200h2m5%200h1m2%200h1M0%2024.5h7m1%200h2m2%200h1m1%200h2m2%200h1m2%200h2m1%200h1%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="card front" style="left:141mm;top:151.5mm;" data-payload="USRC11985004:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m1%200h2m2%200h5m1%200h7M0%201.5h1m5%200h1m3%200h1m7%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m1%200h1m1%200h7m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m2%200h3m3%200h1m2%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m5%200h1m1%200h1m1%200h1m1%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m1%200h1m3%200h4m2%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M9%207.5h2m2%200h1M0%208.5h1m1%200h1m3%200h2m1%200h1m3%200h1m5%200h1m2%200h1m1%200h1M1%209.5h2m2%200h1m2%200h1m2%200h1m6%200h1m2%200h1m1%200h1M0%2010.5h2m2%200h4m1%200h1m3%200h3m2%200h1m2%200h1m1%200h1M1%2011.5h1m2%200h2m5%200h1m2%200h1m2%200h4m2%200h1M0%2012.5h4m2%200h1m2%200h1m1%200h1m1%200h2m2%200h2m1%200h4M2%2013.5h2m4%200h2m3%200h3m2%200h1m1%200h1m1%200h1m1%200h1M0%2014.5h3m1%200h8m5%200h1m1%200h2m2%200h2M2%2015.5h2m1%200h1m3%200h1m3%200h1m2%200h2m4%200h1m1%200h1M0%2016.5h2m2%200h6m1%200h3m2%200h7m1%200h1M8%2017.5h1m1%200h1m1%200h1m2%200h2m3%200h4M0%2018.5h7m1%200h1m3%200h3m1%200h1m1%200h1m1%200h3m1%200h1M0%2019.5h1m5%200h1m2%200h1m1%200h2m1%200h1m1%200h1m3%200h3M0%2020.5h1m1%200h3m1%200h1m3%200h1m2%200h9m1%200h1M0%2021.5h1m1%200h3m1%200h1m3%200h1m2%200h2m3%200h1m3%200h1M0%2022.5h1m1%200h3m1%200h1m1%200h1m2%200h1m4%200h9M0%2023.5h1m5%200h1m2%200h2m2%200h1m1%200h1m2%200h2m1%200h2m1%200h1M0%2024.5h7m1%200h2m1%200h3m1%200h7m1%200h2%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="card front" style="left:9mm;top:217.5mm;" data-payload="USRC11985005:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m1%200h1m4%200h4m1%200h7M0%201.5h1m5%200h1m2%200h1m1%200h2m5%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m1%200h3m1%200h5m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m3%200h1m1%200h1m2%200h1m2%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m3%200h2m2%200h1m1%200h1m1%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m1%200h1m3%200h4m2%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M9%207.5h2m1%200h2M0%208.5h1m1%200h1m3%200h2m1%200h3m1%200h1m5%200h1m2%200h1m1%200h1M0%209.5h2m1%200h2m2%200h2m1%200h1m7%200h1m2%200h1m1%200h1M1%2010.5h1m1%200h2m1%200h1m1%200h2m2%200h4m2%200h1m2%200h1m1%200h1M0%2011.5h3m2%200h1m3%200h1m1%200h2m1%200h1m2%200h4m2%200h1M0%2012.5h5m1%200h5m2%200h2m2%200h2m2%200h3M1%2013.5h1m1%200h3m1%200h4m2%200h3m2%200h1m1%200h1m1%200h1m1%200h1M0%2014.5h2m1%200h1m1%200h7m5%200h1m1%200h2m2%200h2M2%2015.5h1m7%200h1m2%200h1m2%200h2m4%200h1m1%200h1M0%2016.5h3m1%200h4m1%200h1m1%200h3m2%200h7m1%200h1M8%2017.5h2m2%200h1m2%200h2m3%200h4M0%2018.5h7m1%200h3m1%200h3m1%200h1m1%200h1m1%200h3m1%200h1M0%2019.5h1m5%200h1m4%200h2m1%200h1m1%200h1m3%200h3M0%2020.5h1m1%200h3m1%200h1m3%200h1m2%200h9m1%200h1M0%2021.5h1m1%200h3m1%200h1m3%200h1m2%200h2m3%200h1m3%200h1M0%2022.5h1m1%200h3m1%200h1m1%200h1m2%200h1m4%200h9M0%2023.5h1m5%200h1m6%200h1m1%200h1m2%200h2m1%200h2m1%200h1M0%2024.5h7m1%200h1m1%200h4m1%200h7m1%200h2%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="card front" style="left:75mm;top:217.5mm;" data-payload="USRC11985006:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m1%200h1m2%200h1m3%200h1m2%200h7M0%201.5h1m5%200h1m1%200h1m2%200h1m2%200h1m3%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m3%200h4m2%200h1m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m1%200h4m6%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m2%200h1m1%200h1m1%200h3m2%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m3%200h1m3%200h3m1%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M8%207.5h1m1%200h2m1%200h2M0%208.5h1m1%200h2m1%200h3m1%200h1m3%200h3m2%200h1m2%200h1m1%200h2M0%209.5h3m1%200h1m2%200h3m1%200h2m2%200h1m7%200h2M1%2010.5h3m1%200h3m2%200h2m2%200h1m1%200h1m2%200h1m2%200h3M0%2011.5h1m1%200h4m3%200h1m3%200h2m1%200h3m1%200h1m1%200h2M1%2012.5h1m3%200h4m1%200h2m4%200h1m1%200h2m1%200h1M1%2013.5h1m1%200h1m3%200h3m1%200h1m1%200h1m1%200h1m1%200h3m2%200h3M1%2014.5h3m1%200h3m1%200h2m1%200h1m1%200h2m2%200h2m1%200h1M0%2015.5h1m3%200h1m5%200h1m1%200h2m1%200h4m2%200h2M2%2016.5h1m3%200h1m1%200h4m3%200h6M8%2017.5h2m2%200h2m1%200h2m3%200h2m1%200h1M0%2018.5h7m1%200h1m2%200h2m3%200h1m1%200h1m1%200h2m1%200h2M0%2019.5h1m5%200h1m1%200h1m3%200h1m3%200h1m3%200h4M0%2020.5h1m1%200h3m1%200h1m2%200h1m1%200h3m2%200h5m3%200h1M0%2021.5h1m1%200h3m1%200h1m1%200h2m2%200h4m5%200h2m1%200h1M0%2022.5h1m1%200h3m1%200h1m1%200h1m1%200h4m1%200h1m1%200h1m2%200h1m2%200h1M0%2023.5h1m5%200h1m3%200h1m4%200h2m1%200h1m2%200h1m2%200h1M0%2024.5h7m1%200h1m3%200h1m1%200h2m2%200h1m2%200h2m1%200h1%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="card front" style="left:141mm;top:217.5mm;" data-payload="USRC11985007:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m1%200h3m1%200h5m1%200h7M0%201.5h1m5%200h1m1%200h4m1%200h2m3%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m1%200h1m1%200h1m2%200h1m1%200h2m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m2%200h1m2%200h1m1%200h3m1%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m1%200h1m1%200h1m2%200h2m3%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m3%200h7m1%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M10%207.5h1m3%200h1M0%208.5h1m2%200h6m1%200h5m2%200h1m2%200h1m1%200h3M1%209.5h2m1%200h2m6%200h1m1%200h1m1%200h1m3%200h5M1%2010.5h3m2%200h1m1%200h4m2%200h3m1%200h2m1%200h3M0%2011.5h2m1%200h1m3%200h1m3%200h1m2%200h1m1%200h1m2%200h2m1%200h1m1%200h1M2%2012.5h1m3%200h3m1%200h2m1%200h2m2%200h2m2%200h3M0%2013.5h5m2%200h4m1%200h1m2%200h1m6%200h1M0%2014.5h2m1%200h5m2%200h1m3%200h1m4%200h1m4%200h1M0%2015.5h1m1%200h1m2%200h1m2%200h1m1%200h1m1%200h3m2%200h2m1%200h1M0%2016.5h1m2%200h1m2%200h1m3%200h3m3%200h6m2%200h1M8%2017.5h1m1%200h2m3%200h2m3%200h2m2%200h1M0%2018.5h7m1%200h2m2%200h3m1%200h1m1%200h1m1%200h3m1%200h1M0%2019.5h1m5%200h1m1%200h2m1%200h1m1%200h1m2%200h1m3%200h3m1%200h1M0%2020.5h1m1%200h3m1%200h1m1%200h1m2%200h1m1%200h1m1%200h7M0%2021.5h1m1%200h3m1%200h1m1%200h1m1%200h1m1%200h2m2%200h1m3%200h1m3%200h1M0%2022.5h1m1%200h3m1%200h1m2%200h3m1%200h1m3%200h2m1%200h2m1%200h2M0%2023.5h1m5%200h1m2%200h1m1%200h3m1%200h3m1%200h1m1%200h1m1%200h1M0%2024.5h7m1%200h2m1%200h3m1%200h7m1%200h2%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="crop" style="left:6mm;top:19.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:9mm;top:16.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:201mm;top:19.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:201mm;top:16.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:6mm;top:277.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:9mm;top:277.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:201mm;top:277.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:201mm;top:277.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div>
+</section>
+<section class="page back-page">
+<div class="bleed" style="left:138mm;top:16.5mm;width:66mm;height:66mm;background:#0d1422;"></div>
+<div class="card back" style="left:141mm;top:19.5mm;background:#0d1422;color:#ffffff;">
+  <div class="back-content">
+    <div class="year">1955</div>
+    <div class="artist">Chuck Berry</div>
+    <div class="title" style="opacity:0.85;">Maybellene</div>
+  </div>
+</div>
+<div class="bleed" style="left:72mm;top:16.5mm;width:66mm;height:66mm;background:#e87a3d;"></div>
+<div class="card back" style="left:75mm;top:19.5mm;background:#e87a3d;color:#0d1422;">
+  <div class="back-content">
+    <div class="year">1968</div>
+    <div class="artist">The Beatles</div>
+    <div class="title" style="opacity:0.85;">Hey Jude</div>
+  </div>
+</div>
+<div class="bleed" style="left:6mm;top:16.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
+<div class="card back" style="left:9mm;top:19.5mm;background:#ec5b8d;color:#ffffff;">
+  <div class="back-content">
+    <div class="year">1985</div>
+    <div class="artist">a-ha</div>
+    <div class="title" style="opacity:0.85;">Take On Me</div>
+  </div>
+</div>
+<div class="bleed" style="left:138mm;top:82.5mm;width:66mm;height:66mm;background:#00b8d4;"></div>
+<div class="card back" style="left:141mm;top:85.5mm;background:#00b8d4;color:#0d1422;">
+  <div class="back-content">
+    <div class="year">2002</div>
+    <div class="artist">Coldplay</div>
+    <div class="title" style="opacity:0.85;">Clocks</div>
+  </div>
+</div>
+<div class="bleed" style="left:72mm;top:82.5mm;width:66mm;height:66mm;background:#8b5cf6;"></div>
+<div class="card back" style="left:75mm;top:85.5mm;background:#8b5cf6;color:#ffffff;">
+  <div class="back-content">
+    <div class="year">2018</div>
+    <div class="artist">Childish Gambino</div>
+    <div class="title" style="opacity:0.85;">This Is America</div>
+  </div>
+</div>
+<div class="bleed" style="left:6mm;top:82.5mm;width:66mm;height:66mm;background:#f97a6b;"></div>
+<div class="card back" style="left:9mm;top:85.5mm;background:#f97a6b;color:#0d1422;">
+  <div class="back-content">
+    <div class="year">2024</div>
+    <div class="artist">Sabrina Carpenter</div>
+    <div class="title" style="opacity:0.85;">Espresso</div>
+  </div>
+</div>
+<div class="bleed" style="left:138mm;top:148.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
+<div class="card back" style="left:141mm;top:151.5mm;background:#ec5b8d;color:#ffffff;">
+  <div class="back-content">
+    <div class="year">1985</div>
+    <div class="artist">Madonna</div>
+    <div class="title" style="opacity:0.85;">Material Girl</div>
+  </div>
+</div>
+<div class="bleed" style="left:72mm;top:148.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
+<div class="card back" style="left:75mm;top:151.5mm;background:#ec5b8d;color:#ffffff;">
+  <div class="back-content">
+    <div class="year">1985</div>
+    <div class="artist">Prince</div>
+    <div class="title" style="opacity:0.85;">When Doves Cry</div>
+  </div>
+</div>
+<div class="bleed" style="left:6mm;top:148.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
+<div class="card back" style="left:9mm;top:151.5mm;background:#ec5b8d;color:#ffffff;">
+  <div class="back-content">
+    <div class="year">1985</div>
+    <div class="artist">Tears for Fears</div>
+    <div class="title" style="opacity:0.85;">Shout</div>
+  </div>
+</div>
+<div class="bleed" style="left:138mm;top:214.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
+<div class="card back" style="left:141mm;top:217.5mm;background:#ec5b8d;color:#ffffff;">
+  <div class="back-content">
+    <div class="year">1985</div>
+    <div class="artist">Cyndi Lauper</div>
+    <div class="title" style="opacity:0.85;">Time After Time</div>
+  </div>
+</div>
+<div class="bleed" style="left:72mm;top:214.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
+<div class="card back" style="left:75mm;top:217.5mm;background:#ec5b8d;color:#ffffff;">
+  <div class="back-content">
+    <div class="year">1985</div>
+    <div class="artist">Wham!</div>
+    <div class="title" style="opacity:0.85;">Last Christmas</div>
+  </div>
+</div>
+<div class="bleed" style="left:6mm;top:214.5mm;width:66mm;height:66mm;background:#ec5b8d;"></div>
+<div class="card back" style="left:9mm;top:217.5mm;background:#ec5b8d;color:#ffffff;">
+  <div class="back-content">
+    <div class="year">1985</div>
+    <div class="artist">Queen</div>
+    <div class="title" style="opacity:0.85;">I Want To Break Free</div>
+  </div>
+</div>
+<div class="crop" style="left:6mm;top:19.5mm;width:3mm;height:0.25pt;background:#ffffff;"></div><div class="crop" style="left:9mm;top:16.5mm;width:0.25pt;height:3mm;background:#ffffff;"></div><div class="crop" style="left:201mm;top:19.5mm;width:3mm;height:0.25pt;background:#ffffff;"></div><div class="crop" style="left:201mm;top:16.5mm;width:0.25pt;height:3mm;background:#ffffff;"></div><div class="crop" style="left:6mm;top:277.5mm;width:3mm;height:0.25pt;background:#ffffff;"></div><div class="crop" style="left:9mm;top:277.5mm;width:0.25pt;height:3mm;background:#ffffff;"></div><div class="crop" style="left:201mm;top:277.5mm;width:3mm;height:0.25pt;background:#ffffff;"></div><div class="crop" style="left:201mm;top:277.5mm;width:0.25pt;height:3mm;background:#ffffff;"></div>
+</section>
+<section class="page front-page">
+<div class="card front" style="left:9mm;top:19.5mm;" data-payload="USRC11955002:DZ:1234567890">
+  <img class="qr" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2025%2025%22%20shape-rendering%3D%22crispEdges%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M0%200h25v25H0z%22%2F%3E%3Cpath%20stroke%3D%22%230d1422%22%20d%3D%22M0%200.5h7m1%200h2m2%200h5m1%200h7M0%201.5h1m5%200h1m2%200h3m6%200h1m5%200h1M0%202.5h1m1%200h3m1%200h1m1%200h3m2%200h4m1%200h1m1%200h3m1%200h1M0%203.5h1m1%200h3m1%200h1m3%200h1m1%200h1m2%200h1m2%200h1m1%200h3m1%200h1M0%204.5h1m1%200h3m1%200h1m3%200h3m1%200h1m1%200h1m1%200h1m1%200h3m1%200h1M0%205.5h1m5%200h1m1%200h2m1%200h1m1%200h3m2%200h1m5%200h1M0%206.5h7m1%200h1m1%200h1m1%200h1m1%200h1m1%200h1m1%200h7M9%207.5h1m1%200h3M0%208.5h1m1%200h1m3%200h2m1%200h1m1%200h3m5%200h1m2%200h1m1%200h1M0%209.5h1m1%200h1m2%200h1m2%200h2m2%200h1m5%200h1m2%200h1m1%200h1M1%2010.5h1m1%200h1m1%200h2m2%200h2m2%200h3m2%200h1m2%200h1m1%200h1M0%2011.5h1m3%200h2m3%200h3m2%200h1m2%200h4m2%200h1M0%2012.5h1m2%200h2m1%200h1m1%200h2m1%200h1m1%200h2m2%200h2m1%200h4M5%2013.5h1m1%200h1m2%200h1m2%200h3m2%200h2m2%200h1m1%200h1M0%2014.5h2m1%200h1m2%200h2m1%200h1m1%200h1m5%200h1m1%200h2m2%200h2M2%2015.5h1m2%200h1m1%200h2m1%200h1m2%200h1m2%200h2m4%200h1m1%200h1M0%2016.5h2m2%200h1m1%200h1m1%200h1m1%200h4m2%200h7m1%200h1M8%2017.5h3m1%200h1m2%200h2m3%200h4M0%2018.5h7m1%200h3m1%200h3m1%200h1m1%200h1m1%200h3m1%200h1M0%2019.5h1m5%200h1m2%200h1m1%200h2m1%200h1m1%200h1m3%200h3M0%2020.5h1m1%200h3m1%200h1m2%200h1m3%200h8m1%200h2M0%2021.5h1m1%200h3m1%200h1m2%200h2m2%200h2m3%200h1M0%2022.5h1m1%200h3m1%200h1m1%200h2m1%200h1m4%200h9M0%2023.5h1m5%200h1m3%200h1m2%200h1m1%200h1m2%200h2m1%200h2m1%200h1M0%2024.5h7m1%200h1m2%200h3m1%200h7m1%200h2%22%2F%3E%3C%2Fsvg%3E" alt="" />
+  <div class="wordmark">tocarta</div>
+</div>
+<div class="crop" style="left:6mm;top:19.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:9mm;top:16.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:69mm;top:19.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:69mm;top:16.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:6mm;top:79.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:9mm;top:79.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div><div class="crop" style="left:69mm;top:79.5mm;width:3mm;height:0.25pt;background:#0d1422;"></div><div class="crop" style="left:69mm;top:79.5mm;width:0.25pt;height:3mm;background:#0d1422;"></div>
+</section>
+<section class="page back-page">
+<div class="bleed" style="left:138mm;top:16.5mm;width:66mm;height:66mm;background:#0d1422;"></div>
+<div class="card back" style="left:141mm;top:19.5mm;background:#0d1422;color:#ffffff;">
+  <div class="back-content">
+    <div class="year">1956</div>
+    <div class="artist">Elvis Presley</div>
+    <div class="title" style="opacity:0.85;">Heartbreak Hotel</div>
+  </div>
+</div>
+<div class="crop" style="left:138mm;top:19.5mm;width:3mm;height:0.25pt;background:#ffffff;"></div><div class="crop" style="left:141mm;top:16.5mm;width:0.25pt;height:3mm;background:#ffffff;"></div><div class="crop" style="left:201mm;top:19.5mm;width:3mm;height:0.25pt;background:#ffffff;"></div><div class="crop" style="left:201mm;top:16.5mm;width:0.25pt;height:3mm;background:#ffffff;"></div><div class="crop" style="left:138mm;top:79.5mm;width:3mm;height:0.25pt;background:#ffffff;"></div><div class="crop" style="left:141mm;top:79.5mm;width:0.25pt;height:3mm;background:#ffffff;"></div><div class="crop" style="left:201mm;top:79.5mm;width:3mm;height:0.25pt;background:#ffffff;"></div><div class="crop" style="left:201mm;top:79.5mm;width:0.25pt;height:3mm;background:#ffffff;"></div>
+</section>
+</body>
+</html>"
+`;
