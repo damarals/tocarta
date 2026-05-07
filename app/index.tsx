@@ -110,7 +110,7 @@ export default function LibraryScreen() {
           )}
         />
       )}
-      <NewDeckFAB />
+      <NewDeckFAB onPress={() => router.push('/generate')} />
     </SafeAreaView>
   );
 }
