@@ -15,6 +15,7 @@ pnpm-debug.log*
 dist/
 web-build/
 .metro-health-check*
+expo-env.d.ts
 
 # Native build artifacts
 *.apk
@@ -23,10 +24,21 @@ web-build/
 /android/
 /ios/
 
+# Native (signing artifacts)
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
 # Environment
 .env
 .env.local
 .env.*.local
+.env*.local
 
 # Editor and OS
 .vscode/
@@ -35,7 +47,13 @@ web-build/
 .DS_Store
 Thumbs.db
 
+# TypeScript
+*.tsbuildinfo
+
 # Misc
 *.log
 .cache/
 coverage/
+
+# Expo reset-project artifact
+app-example
