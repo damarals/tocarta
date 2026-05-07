@@ -1,14 +1,18 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BrandMark } from '@/components/brand/BrandMark';
+import { InlineAlert } from '@/components/ui/inline-alert';
+import { PushButton } from '@/components/ui/push-button';
+import { ScreenHeader } from '@/components/ui/screen-header';
+import { Surface } from '@/components/ui/surface';
 import { Text } from '@/components/ui/text';
 import type { DeckPointer } from '@/lib/deck-pointer';
 import { reconstructPlaylistUrl } from '@/lib/deck-pointer';
 import { markDeclined } from '@/lib/import-session';
 import { extractFromDeezerUrl } from '@/lib/playlist-extractor';
-import { tokens } from '@/theme/tokens';
 
 type ScreenState =
   | { kind: 'loading' }
@@ -77,8 +81,9 @@ export default function ImportScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} className="flex-1 bg-navy900">
-      <View className="flex-1 px-6 py-8">
+    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} className="flex-1 bg-background">
+      <ScreenHeader title="Import deck" />
+      <View className="flex-1 px-5 pb-5">
         {state.kind === 'loading' && <LoadingView />}
         {state.kind === 'unsupported' && (
           <ErrorView message={UNSUPPORTED_MESSAGE} onBack={onBack} />
@@ -101,9 +106,17 @@ export default function ImportScreen() {
 
 function LoadingView(): React.ReactElement {
   return (
-    <View className="flex-1 items-center justify-center gap-4">
-      <ActivityIndicator color={tokens.colors.lime} />
-      <Text className="font-body text-foreground text-base">
+    <View className="flex-1 items-center justify-center gap-7">
+      <BrandMark size={88} spinning glow="lime" />
+      <Text
+        className="text-foreground text-center"
+        style={{
+          fontFamily: 'Nunito_900Black',
+          fontSize: 24,
+          lineHeight: 26,
+          letterSpacing: -0.48,
+        }}
+      >
         Looking up the deck…
       </Text>
     </View>
@@ -118,20 +131,27 @@ function ErrorView({
   onBack: () => void;
 }): React.ReactElement {
   return (
-    <View className="flex-1 items-center justify-center gap-6">
-      <Text className="font-display text-foreground text-2xl text-center leading-snug">
-        {message}
-      </Text>
-      <Pressable
-        onPress={onBack}
-        role="button"
-        accessibilityLabel="Back to Library"
-        className="rounded-full bg-primary px-6 py-3 active:bg-primary/90"
-      >
-        <Text className="font-body text-primary-foreground text-base font-bold">
-          Back to Library
+    <View className="flex-1 items-center justify-center gap-5">
+      <InlineAlert tone="red" icon="alert-circle">
+        <Text
+          className="text-red"
+          style={{
+            fontFamily: 'Nunito_700Bold',
+            fontSize: 13,
+            lineHeight: 18,
+          }}
+        >
+          {message}
         </Text>
-      </Pressable>
+      </InlineAlert>
+      <PushButton
+        variant="ghost"
+        size="md"
+        onPress={onBack}
+        accessibilityLabel="Back to Library"
+      >
+        Back to Library
+      </PushButton>
     </View>
   );
 }
@@ -149,41 +169,64 @@ function PromptView({
 }): React.ReactElement {
   return (
     <View className="flex-1 justify-between">
-      <View className="gap-3 pt-8">
-        <Text className="font-body text-navy200 text-sm uppercase tracking-wide">
+      <View className="gap-4 pt-6">
+        <Text
+          className="text-navy400"
+          style={{
+            fontFamily: 'Nunito_800ExtraBold',
+            fontSize: 12,
+            letterSpacing: 1.44,
+            textTransform: 'uppercase',
+          }}
+        >
           Import this deck?
         </Text>
-        <Text
-          className="font-display text-foreground text-4xl leading-tight"
-          numberOfLines={3}
-        >
-          {name}
-        </Text>
-        <Text className="font-body text-muted-foreground text-base">
-          {trackCount === 1 ? '1 track' : `${trackCount} tracks`}
-        </Text>
+        <Surface>
+          <View className="gap-2">
+            <Text
+              className="text-foreground"
+              style={{
+                fontFamily: 'Nunito_900Black',
+                fontSize: 28,
+                lineHeight: 32,
+                letterSpacing: -0.56,
+              }}
+              numberOfLines={3}
+            >
+              {name}
+            </Text>
+            <Text
+              className="text-navy200"
+              style={{
+                fontFamily: 'Nunito_600SemiBold',
+                fontSize: 14,
+                lineHeight: 20,
+              }}
+            >
+              {trackCount === 1 ? '1 track' : `${trackCount} tracks`}
+            </Text>
+          </View>
+        </Surface>
       </View>
       <View className="gap-3">
-        <Pressable
+        <PushButton
+          variant="primary"
+          size="lg"
+          fullWidth
           onPress={onImport}
-          role="button"
           accessibilityLabel="Import this deck"
-          className="items-center justify-center rounded-full bg-primary px-6 py-4 active:bg-primary/90"
         >
-          <Text className="font-body text-primary-foreground text-base font-bold">
-            Import this deck
-          </Text>
-        </Pressable>
-        <Pressable
+          Import this deck
+        </PushButton>
+        <PushButton
+          variant="ghost"
+          size="lg"
+          fullWidth
           onPress={onNotNow}
-          role="button"
           accessibilityLabel="Not now"
-          className="items-center justify-center rounded-full border border-border px-6 py-4 active:bg-navy700"
         >
-          <Text className="font-body text-foreground text-base font-bold">
-            Not now
-          </Text>
-        </Pressable>
+          Not now
+        </PushButton>
       </View>
     </View>
   );
