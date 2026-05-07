@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tocarta banner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Nunito:wght@400;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  body {
+    margin: 0;
+    padding: 32px;
+    background: #1a1f2e;
+    font-family: 'Nunito', system-ui, sans-serif;
+    color: #C4CCDF;
+  }
+  .preview-frame {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  .banner {
+    width: 1660px;
+    height: 474px;
+    box-sizing: border-box;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 50px -20px rgba(0,0,0,0.4);
+    display: flex;
+    background: linear-gradient(135deg, #0F172A 0%, #1F2D54 60%, #2A3D6E 100%);
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 100px;
+  }
+
+  .app-text { max-width: 760px; z-index: 2; }
+  .app-text .eyebrow {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #58CC02;
+    margin-bottom: 16px;
+  }
+  .app-text .wordmark {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 144px;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    text-transform: lowercase;
+    color: white;
+    margin: 0;
+  }
+  .app-text .wordmark .accent { color: #58CC02; }
+  .app-text h1 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 32px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: white;
+    margin: 14px 0 0;
+  }
+  .app-text .sub {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.4;
+    color: #C4CCDF;
+    margin: 12px 0 0;
+    max-width: 600px;
+  }
+  .app-text .pills {
+    display: flex; gap: 10px;
+    margin-top: 28px;
+  }
+  .app-text .pill {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(196,204,223,0.2);
+    color: #C4CCDF;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .phone-stage {
+    position: relative;
+    width: 640px;
+    height: 100%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .phone-stage .bg-card {
+    position: absolute;
+    width: 130px;
+    height: 186px;
+    border-radius: 12px;
+    box-shadow: 0 14px 28px -10px rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 40px;
+    letter-spacing: -0.02em;
+  }
+  .phone-stage .bg-card.b1 { background: #d4a857; color: #0F172A; transform: rotate(-22deg) scale(1.1); top: 50px; left: 30px; }
+  .phone-stage .bg-card.b2 { background: #ec5b8d; color: white; transform: rotate(-16deg) scale(0.92); top: 220px; left: 80px; z-index: 1; }
+  .phone-stage .bg-card.b3 { background: #c8e84a; color: #0F172A; transform: rotate(18deg) scale(1.08); top: 80px; right: 20px; }
+  .phone-stage .bg-card.b4 { background: #f97a6b; color: #0F172A; transform: rotate(12deg) scale(0.94); top: 230px; right: 60px; z-index: 1; }
+  .phone-frame {
+    width: 240px;
+    height: 500px;
+    background: #0a0e1a;
+    border-radius: 32px;
+    border: 7px solid #2a3344;
+    position: relative;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
+    overflow: hidden;
+    flex-shrink: 0;
+    transform: rotate(-5deg) translateY(20px);
+    z-index: 2;
+  }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: #0F172A;
+    padding: 28px 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .phone-screen .ph-header {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .phone-screen .ph-vinyl {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #0F172A;
+    border: 2px solid #58CC02;
+    position: relative;
+  }
+  .phone-screen .ph-vinyl::after {
+    content: ''; display: block;
+    width: 8px; height: 8px;
+    background: #FF6BB5;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .phone-screen .ph-wordmark {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    color: white;
+    letter-spacing: -0.02em;
+  }
+  .phone-screen .ph-wordmark .accent { color: #58CC02; }
+  .phone-screen .ph-hero {
+    background: linear-gradient(135deg, #16213F 0%, #1F2D54 100%);
+    border: 1.5px solid #2A3D6E;
+    border-radius: 14px;
+    padding: 14px 14px 16px;
+    margin-top: 4px;
+  }
+  .phone-screen .ph-pill {
+    background: rgba(88,204,2,0.15);
+    border: 1px solid rgba(88,204,2,0.3);
+    color: #58CC02;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+  .phone-screen .ph-headline {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    color: white;
+    line-height: 1.15;
+    margin: 8px 0 10px;
+  }
+  .phone-screen .ph-cta {
+    background: #58CC02;
+    color: #0F172A;
+    text-align: center;
+    padding: 8px;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    box-shadow: 0 3px 0 0 #4AA802;
+  }
+  .phone-screen .ph-deck {
+    background: #16213F;
+    border: 1.5px solid #2A3D6E;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 4px;
+  }
+  .phone-screen .ph-deck .name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 12px;
+    color: white;
+  }
+  .phone-screen .ph-deck .meta {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    color: #C4CCDF;
+    margin-top: 4px;
+  }
+  .phone-screen .ph-deck .meta .year {
+    font-family: 'Fraunces', serif;
+    color: #C4CCDF;
+  }
+</style>
+</head>
+<body>
+
+<div class="preview-frame">
+  <div class="banner">
+    <div class="app-text">
+      <div class="eyebrow">Self-hosted · Open source · Android</div>
+      <div class="wordmark">to<span class="accent">carta</span></div>
+      <h1>A music year-guessing card game.</h1>
+      <div class="sub">Paste a Deezer playlist, print the cards, scan during play. The app plays a preview without revealing the song. Flip the card to score.</div>
+      <div class="pills">
+        <div class="pill">No account</div>
+        <div class="pill">No telemetry</div>
+        <div class="pill">Local-only</div>
+      </div>
+    </div>
+    <div class="phone-stage">
+      <div class="bg-card b1">1971</div>
+      <div class="bg-card b2">1985</div>
+      <div class="bg-card b3">1999</div>
+      <div class="bg-card b4">2024</div>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="ph-header">
+            <div class="ph-vinyl"></div>
+            <div class="ph-wordmark">to<span class="accent">carta</span></div>
+          </div>
+          <div class="ph-hero">
+            <span class="ph-pill">Ready to play</span>
+            <div class="ph-headline">Scan a card to start the round.</div>
+            <div class="ph-cta">Open scanner</div>
+          </div>
+          <div class="ph-deck">
+            <div class="name">Yacht Club Mix</div>
+            <div class="meta">52 cards · <span class="year">1971 — 2019</span></div>
+          </div>
+          <div class="ph-deck">
+            <div class="name">Saturday Disco</div>
+            <div class="meta">38 cards · <span class="year">1976 — 1984</span></div>
+          </div>
+          <div class="ph-deck">
+            <div class="name">Indie 2010s</div>
+            <div class="meta">44 cards · <span class="year">2008 — 2019</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
