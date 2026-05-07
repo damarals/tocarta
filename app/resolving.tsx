@@ -1,9 +1,11 @@
 import * as Crypto from 'expo-crypto';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Animated, Easing, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BrandMark } from '@/components/brand/BrandMark';
+import { PushButton } from '@/components/ui/push-button';
 import { Text } from '@/components/ui/text';
 import { createCache } from '@/lib/cache';
 import { createDeckGenerator } from '@/lib/deck-generator';
@@ -15,6 +17,7 @@ import {
 } from '@/lib/playlist-extractor';
 import { setPostGenerationDrops } from '@/lib/post-generation-store';
 import { createRateLimiter } from '@/lib/rate-limiter';
+import { cn } from '@/lib/utils';
 import { createYearResolver, type YearResolver } from '@/lib/year-resolver';
 
 const cache = createCache({ namespace: '' });
@@ -22,6 +25,7 @@ const rateLimiter = createRateLimiter({ tokensPerSecond: 1 });
 const yearResolver = createYearResolver({ cache, rateLimiter });
 
 const LIVE_LOG_LINES = 5;
+const LOG_OPACITIES = [0.3, 0.5, 0.7, 0.85, 1];
 
 type ProgressView = {
   done: number;
@@ -30,6 +34,7 @@ type ProgressView = {
 };
 
 type LogLine = {
+  isrc: string;
   artist: string;
   title: string;
   year: number | null;
@@ -63,17 +68,16 @@ function mapError(err: ExtractError): string {
   }
 }
 
-function formatEta(secondsRemaining: number): string {
-  if (secondsRemaining <= 0) return 'Almost done…';
-  if (secondsRemaining < 60) return `~${secondsRemaining}s remaining`;
-  const minutes = Math.floor(secondsRemaining / 60);
-  const seconds = secondsRemaining % 60;
-  return `~${minutes}m ${seconds}s remaining`;
-}
-
 function progressFraction(progress: ProgressView): number {
   if (progress.total === 0) return 0;
   return Math.min(1, progress.done / progress.total);
+}
+
+function formatEta(progress: ProgressView): string {
+  const remaining = Math.max(0, progress.total - progress.done);
+  if (progress.total === 0) return 'Loading…';
+  if (remaining === 0) return 'Almost done';
+  return `~${remaining}s left`;
 }
 
 export default function ResolvingScreen() {
@@ -87,6 +91,7 @@ export default function ResolvingScreen() {
   // Strict mode and React Fast Refresh can fire effects twice; avoid running
   // the generator a second time and double-saving the deck.
   const startedRef = useRef(false);
+  const controllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (startedRef.current) return;
@@ -98,6 +103,7 @@ export default function ResolvingScreen() {
     }
 
     const controller = new AbortController();
+    controllerRef.current = controller;
     let cancelled = false;
     const log: LogLine[] = [];
     let progressView: ProgressView = { done: 0, total: 0, dropped: 0 };
@@ -119,7 +125,7 @@ export default function ResolvingScreen() {
         const result = await yearResolver.resolve(isrc);
         if (!cancelled) {
           const meta = trackByIsrc.get(isrc) ?? { artist: '', title: isrc };
-          log.push({ artist: meta.artist, title: meta.title, year: result.year });
+          log.push({ isrc, artist: meta.artist, title: meta.title, year: result.year });
           setState({ kind: 'working', progress: progressView, log: [...log] });
         }
         return result;
@@ -165,28 +171,39 @@ export default function ResolvingScreen() {
     };
   }, [router, url]);
 
+  const onCancel = () => {
+    controllerRef.current?.abort();
+    router.back();
+  };
+
   return (
     <SafeAreaView edges={['left', 'right', 'bottom']} className="flex-1 bg-background">
-      <View className="flex-1 px-6 py-6 gap-6">
-        {state.kind === 'working' && <WorkingView progress={state.progress} log={state.log} />}
-        {state.kind === 'error' && (
-          <View className="flex-1 items-center justify-center gap-4">
-            <Text className="font-display text-foreground text-2xl text-center">
-              {state.message}
-            </Text>
-            <Pressable
-              onPress={() => router.replace('/generate')}
-              role="button"
-              accessibilityLabel="Back to create"
-              className="items-center justify-center rounded-full bg-primary px-6 py-3 active:bg-primary/90"
-            >
-              <Text className="font-body text-primary-foreground text-base font-bold">
-                Back
-              </Text>
-            </Pressable>
-          </View>
-        )}
-      </View>
+      {state.kind === 'working' && (
+        <WorkingView progress={state.progress} log={state.log} onCancel={onCancel} />
+      )}
+      {state.kind === 'error' && (
+        <View className="flex-1 items-center justify-center px-6 gap-4">
+          <Text
+            className="text-foreground text-center"
+            style={{
+              fontFamily: 'Nunito_900Black',
+              fontSize: 24,
+              lineHeight: 28,
+              letterSpacing: -0.36,
+            }}
+          >
+            {state.message}
+          </Text>
+          <PushButton
+            variant="primary"
+            size="md"
+            onPress={() => router.replace('/generate')}
+            accessibilityLabel="Back to create"
+          >
+            Back
+          </PushButton>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -194,62 +211,152 @@ export default function ResolvingScreen() {
 function WorkingView({
   progress,
   log,
+  onCancel,
 }: {
   progress: ProgressView;
   log: LogLine[];
+  onCancel: () => void;
 }): React.ReactElement {
   const fraction = progressFraction(progress);
-  const remainingSeconds = Math.max(0, progress.total - progress.done);
   const recent = log.slice(-LIVE_LOG_LINES);
+  const percent = Math.round(fraction * 100);
+
+  // Animate the bar fill width on each progress change with a 220ms ease.
+  const widthAnim = useRef(new Animated.Value(fraction)).current;
+  useEffect(() => {
+    Animated.timing(widthAnim, {
+      toValue: fraction,
+      duration: 220,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  }, [fraction, widthAnim]);
+
+  const animatedWidth = widthAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0%', '100%'],
+  });
 
   return (
-    <View className="flex-1 gap-6">
-      <Text className="font-display text-foreground text-3xl">Resolving deck</Text>
-
-      <View className="gap-2">
-        <View className="h-3 w-full rounded-full bg-navy500 overflow-hidden">
-          <View
-            className="h-full bg-lime"
-            style={{ width: `${Math.round(fraction * 100)}%` }}
-          />
-        </View>
-        <Text className="font-body text-muted-foreground text-sm">
-          {progress.done}/{progress.total === 0 ? '?' : progress.total}
+    <View className="flex-1">
+      <View className="flex-1 items-center justify-center px-6">
+        <BrandMark size={120} spinning glow="lime" />
+        <Text
+          className="text-foreground text-center mt-7"
+          style={{
+            fontFamily: 'Nunito_900Black',
+            fontSize: 28,
+            lineHeight: 30,
+            letterSpacing: -0.56,
+          }}
+        >
+          Looking up release years…
         </Text>
-      </View>
-
-      <View className="flex-row items-center gap-3">
-        <Text className="font-body text-foreground text-base">
-          {progress.done}/{progress.total === 0 ? '?' : progress.total} resolved
+        <Text
+          className="font-display text-navy200 text-sm text-center mt-2.5"
+          style={{
+            fontFamily: 'Nunito_600SemiBold',
+            lineHeight: 21,
+            maxWidth: 280,
+          }}
+        >
+          We&apos;re checking each track against the music database.
         </Text>
-        {progress.dropped > 0 && (
-          <View className="rounded-full bg-gold/20 px-3 py-1">
-            <Text className="font-body text-gold text-sm">
+
+        <View className="w-full max-w-[320px] mt-9">
+          <View className="h-2 rounded-full border-[1.5px] border-navy600 bg-navy900 overflow-hidden">
+            <Animated.View
+              className="h-full bg-gold"
+              style={{ width: animatedWidth }}
+            />
+          </View>
+          <View className="flex-row justify-between mt-3">
+            <Text
+              className="text-navy200"
+              style={{
+                fontFamily: 'JetBrainsMono_500Medium',
+                fontSize: 12,
+              }}
+            >
+              {progress.done}/{progress.total === 0 ? '?' : progress.total}
+            </Text>
+            <Text
+              className="text-navy200"
+              style={{
+                fontFamily: 'JetBrainsMono_500Medium',
+                fontSize: 12,
+              }}
+            >
+              {formatEta(progress)}
+            </Text>
+          </View>
+          <View className="flex-row justify-between mt-1">
+            <Text
+              className="text-navy400"
+              style={{
+                fontFamily: 'JetBrainsMono_500Medium',
+                fontSize: 11,
+              }}
+            >
               {progress.dropped} dropped
             </Text>
+            <Text
+              className="text-navy400"
+              style={{
+                fontFamily: 'JetBrainsMono_500Medium',
+                fontSize: 11,
+              }}
+            >
+              {percent}%
+            </Text>
+          </View>
+        </View>
+
+        {recent.length > 0 && (
+          <View
+            className="w-full max-w-[320px] mt-7"
+            style={{ minHeight: recent.length * 18 }}
+          >
+            {recent.map((line, idx) => {
+              const opacity =
+                LOG_OPACITIES[
+                  Math.max(0, LOG_OPACITIES.length - recent.length + idx)
+                ] ?? 1;
+              const isDropped = line.year === null;
+              return (
+                <Text
+                  key={`${line.isrc}-${idx}`}
+                  className={cn(isDropped ? 'text-red' : 'text-navy200')}
+                  numberOfLines={1}
+                  style={{
+                    fontFamily: 'JetBrainsMono_500Medium',
+                    fontSize: 11,
+                    lineHeight: 18,
+                    opacity,
+                  }}
+                >
+                  {line.artist
+                    ? `${line.artist} — ${line.title}`
+                    : line.isrc}
+                  {' → '}
+                  {isDropped ? 'skipped' : `${line.year} ✓`}
+                </Text>
+              );
+            })}
           </View>
         )}
       </View>
-
-      <Text className="font-body text-muted-foreground text-sm">
-        {progress.total === 0
-          ? 'Loading the playlist…'
-          : formatEta(remainingSeconds)}
-      </Text>
-
-      {recent.length > 0 && (
-        <View className="rounded-xl border border-border bg-card p-3 gap-1">
-          {recent.map((line, idx) => (
-            <Text
-              key={`${line.artist}-${line.title}-${idx}`}
-              className="font-body text-card-foreground text-sm"
-              numberOfLines={1}
-            >
-              {line.artist} — {line.title} → {line.year ?? '—'}
-            </Text>
-          ))}
-        </View>
-      )}
+      <View className="px-5 pb-2">
+        <PushButton
+          variant="ghost"
+          size="lg"
+          fullWidth
+          onPress={onCancel}
+          accessibilityLabel="Cancel"
+        >
+          Cancel
+        </PushButton>
+      </View>
     </View>
   );
 }
