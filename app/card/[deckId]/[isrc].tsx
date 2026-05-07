@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import QRCode from 'react-native-qrcode-svg';
-import Svg, { Circle } from 'react-native-svg';
 
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
@@ -104,7 +103,6 @@ function CardPreviews({ deck, card }: CardPreviewsProps): React.ReactElement {
   const displayYear = card.yearOverride ?? card.year;
   const era = eraColor(displayYear);
   const qrPayload = buildQrPayload(card, deck);
-  const isrcTail = card.isrc.slice(-6);
 
   return (
     <View className="flex-1">
@@ -123,7 +121,7 @@ function CardPreviews({ deck, card }: CardPreviewsProps): React.ReactElement {
         </Text>
 
         <CardLabeled label="Front · scan side">
-          <CardFront qrPayload={qrPayload} isrcTail={isrcTail} />
+          <CardFront qrPayload={qrPayload} />
         </CardLabeled>
         <View style={{ height: 16 }} />
         <CardLabeled label="Back · reveal side">
@@ -207,10 +205,8 @@ function CardLabeled({
 
 function CardFront({
   qrPayload,
-  isrcTail,
 }: {
   qrPayload: string;
-  isrcTail: string;
 }): React.ReactElement {
   return (
     <View
@@ -218,128 +214,31 @@ function CardFront({
       style={{
         width: CARD_PX,
         height: CARD_PX,
-        backgroundColor: '#F4EDE0',
+        backgroundColor: '#FFFFFF',
         borderRadius: 14,
         overflow: 'hidden',
-        position: 'relative',
+        alignItems: 'center',
+        paddingTop: 8 * MM,
       }}
     >
-      {/* Brand corner top-left */}
-      <View
-        style={{
-          position: 'absolute',
-          top: 14,
-          left: 14,
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 6,
-        }}
-      >
-        <Svg width={14} height={14} viewBox="0 0 32 32">
-          <Circle cx={16} cy={16} r={14} fill={tokens.colors.navy900} />
-          <Circle cx={16} cy={16} r={3} fill={tokens.colors.lime} />
-        </Svg>
-        <Text
-          style={{
-            fontFamily: 'Nunito_900Black',
-            fontSize: 11,
-            color: tokens.colors.navy900,
-            letterSpacing: 0.44,
-            textTransform: 'uppercase',
-          }}
-        >
-          tocarta
-        </Text>
-      </View>
-
-      {/* ISRC tail top-right */}
+      <QRCode
+        value={qrPayload}
+        size={QR_PX}
+        backgroundColor="#FFFFFF"
+        color={tokens.colors.navy900}
+      />
       <Text
         style={{
-          position: 'absolute',
-          top: 14,
-          right: 14,
-          fontFamily: 'JetBrainsMono_500Medium',
-          fontSize: 9,
-          color: tokens.colors.navy400,
+          fontFamily: 'Fraunces_600SemiBold',
+          fontSize: 5 * MM,
+          lineHeight: 5 * MM,
+          color: tokens.colors.navy900,
+          letterSpacing: -0.05,
+          marginTop: 0.5 * MM,
         }}
       >
-        {isrcTail}
+        tocarta
       </Text>
-
-      {/* Centered QR in white frame */}
-      <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: '#fff',
-            padding: 6,
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: 'rgba(15,23,42,0.18)',
-          }}
-        >
-          <QRCode
-            value={qrPayload}
-            size={QR_PX}
-            backgroundColor="#fff"
-            color={tokens.colors.navy900}
-          />
-        </View>
-      </View>
-
-      {/* Bottom row: scan caption + lime play pill */}
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 14,
-          left: 14,
-          right: 14,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'flex-end',
-        }}
-      >
-        <Text
-          style={{
-            fontFamily: 'Nunito_800ExtraBold',
-            fontSize: 9,
-            color: tokens.colors.navy400,
-            letterSpacing: 0.9,
-            textTransform: 'uppercase',
-          }}
-        >
-          scan with the app
-        </Text>
-        <View
-          style={{
-            paddingHorizontal: 8,
-            paddingVertical: 3,
-            backgroundColor: tokens.colors.lime,
-            borderRadius: 999,
-          }}
-        >
-          <Text
-            style={{
-              fontFamily: 'Nunito_900Black',
-              fontSize: 9,
-              color: tokens.colors.navy900,
-              letterSpacing: 0.9,
-              textTransform: 'uppercase',
-            }}
-          >
-            play
-          </Text>
-        </View>
-      </View>
     </View>
   );
 }
@@ -368,114 +267,50 @@ function CardBack({
         backgroundColor: background,
         borderRadius: 14,
         overflow: 'hidden',
-        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: BACK_PADDING_PX,
       }}
     >
-      {/* Brand corner top-left at 60% opacity */}
-      <View
+      <Text
         style={{
-          position: 'absolute',
-          top: 14,
-          left: 14,
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 6,
-          opacity: 0.6,
+          fontFamily: 'Fraunces_600SemiBold',
+          fontSize: YEAR_FONT_PX,
+          lineHeight: YEAR_FONT_PX,
+          letterSpacing: -YEAR_FONT_PX * 0.02,
+          color: text,
+          textAlign: 'center',
+          marginBottom: 4 * MM,
         }}
       >
-        <Svg width={12} height={12} viewBox="0 0 32 32">
-          <Circle cx={16} cy={16} r={13} fill="none" stroke={text} strokeWidth={3} />
-          <Circle cx={16} cy={16} r={3} fill={text} />
-        </Svg>
-        <Text
-          style={{
-            fontFamily: 'Nunito_900Black',
-            fontSize: 9,
-            color: text,
-            letterSpacing: 0.36,
-            textTransform: 'uppercase',
-          }}
-        >
-          tocarta
-        </Text>
-      </View>
-
-      {/* Decorative concentric rings bleed top-right */}
-      <Svg
-        width={120}
-        height={120}
-        viewBox="0 0 64 64"
-        style={{ position: 'absolute', top: -30, right: -30, opacity: 0.12 }}
-      >
-        <Circle cx={32} cy={32} r={28} fill="none" stroke={text} strokeWidth={1.5} />
-        <Circle cx={32} cy={32} r={20} fill="none" stroke={text} strokeWidth={1.5} />
-        <Circle cx={32} cy={32} r={12} fill="none" stroke={text} strokeWidth={1.5} />
-      </Svg>
-
-      {/* Centered year */}
-      <View
+        {year === null ? '—' : String(year)}
+      </Text>
+      <Text
+        numberOfLines={2}
         style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: BACK_PADDING_PX,
+          fontFamily: 'Nunito_700Bold',
+          fontSize: 4 * MM,
+          lineHeight: 4 * MM * 1.2,
+          color: text,
+          textAlign: 'center',
+          marginBottom: 1 * MM,
         }}
       >
-        <Text
-          style={{
-            fontFamily: 'Fraunces_900Black',
-            fontSize: YEAR_FONT_PX,
-            lineHeight: YEAR_FONT_PX,
-            letterSpacing: -YEAR_FONT_PX * 0.03,
-            color: text,
-            textAlign: 'center',
-          }}
-        >
-          {year === null ? '—' : String(year)}
-        </Text>
-      </View>
-
-      {/* Bottom: title + artist */}
-      <View
+        {artist}
+      </Text>
+      <Text
+        numberOfLines={2}
         style={{
-          position: 'absolute',
-          bottom: 14,
-          left: 14,
-          right: 14,
-          alignItems: 'center',
+          fontFamily: 'Nunito_400Regular',
+          fontSize: 3.5 * MM,
+          lineHeight: 3.5 * MM * 1.2,
+          color: text,
+          opacity: 0.85,
+          textAlign: 'center',
         }}
       >
-        <Text
-          numberOfLines={2}
-          style={{
-            fontFamily: 'Nunito_900Black',
-            fontSize: 12,
-            lineHeight: 14,
-            color: text,
-            textAlign: 'center',
-          }}
-        >
-          {title}
-        </Text>
-        <Text
-          numberOfLines={1}
-          style={{
-            fontFamily: 'Nunito_700Bold',
-            fontSize: 10,
-            lineHeight: 12,
-            color: text,
-            opacity: 0.85,
-            textAlign: 'center',
-            marginTop: 3,
-          }}
-        >
-          {artist}
-        </Text>
-      </View>
+        {title}
+      </Text>
     </View>
   );
 }
