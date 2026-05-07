@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Tocarta semantic tokens (rnr / shadcn parity).
+ * Values are space-separated RGB triplets so Tailwind's `<alpha-value>`
+ * placeholder can compose them with utilities like `bg-primary/80`.
+ *
+ * Tocarta is a dark-first product: the only theme defined is the dark one
+ * mapped onto the brand palette. The :root selector is intentional — we do
+ * not switch to light mode in V1, so a single block keeps the mapping
+ * compact and obvious.
+ */
+:root {
+  /* navy900 — primary surface */
+  --background: 13 20 34;
+  /* navy200 — body text on dark surfaces */
+  --foreground: 168 179 199;
+
+  /* lime — primary action / accent */
+  --primary: 200 232 74;
+  /* navy900 — text on lime buttons */
+  --primary-foreground: 13 20 34;
+
+  /* pink — secondary call-out */
+  --secondary: 236 91 141;
+  /* navy900 — text on pink */
+  --secondary-foreground: 13 20 34;
+
+  /* navy700 — muted surfaces (cards, sheets, dividers' parents) */
+  --muted: 26 31 46;
+  /* navy200 — muted/secondary text */
+  --muted-foreground: 168 179 199;
+
+  /* gold — accent for highlights */
+  --accent: 212 168 87;
+  /* navy900 — text on gold */
+  --accent-foreground: 13 20 34;
+
+  /* red — destructive intent */
+  --destructive: 239 68 68;
+  /* white-ish (navy200 stays readable on red too) */
+  --destructive-foreground: 168 179 199;
+
+  /* navy500 — subtle borders on dark surfaces */
+  --border: 42 51 68;
+  /* navy500 — input outlines */
+  --input: 42 51 68;
+  /* lime — focus rings (matches primary) */
+  --ring: 200 232 74;
+
+  /* navy700 — card surface above background */
+  --card: 26 31 46;
+  /* navy200 — text on cards */
+  --card-foreground: 168 179 199;
+}
