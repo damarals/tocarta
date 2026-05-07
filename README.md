@@ -1,14 +1,21 @@
-# Tocarta
+<img alt="Tocarta banner" src=".github/banner.png" style="border-radius: 15px; max-width: 100%; height: auto; display: block; margin: 0 0 16px 0;"/>
 
-A self-hosted, open-source music year-guessing card game built on your own Deezer playlists.
+<div align="center">
+    <img src="https://github.com/damarals/tocarta/actions/workflows/ci.yml/badge.svg" alt="CI" />
+    <img src="https://img.shields.io/github/license/damarals/tocarta?color=blue" alt="License" />
+    <img src="https://img.shields.io/github/last-commit/damarals/tocarta/main?color=blue&label=last%20commit" alt="Last commit" />
+</div>
+<br />
+<div align="center"><strong>A music year-guessing card game built on your own Deezer playlists</strong></div>
+<div align="center">Print the deck. Scan a card to play the preview.<br/>Guess the year, flip the card to reveal.</div>
+<br />
+<div align="center">
+  <sub>Built by <a href="https://github.com/damarals">Daniel Amaral</a></sub>
+</div>
 
 ## Status
 
 V1 in development. Android-only sideload. Not on the Play Store.
-
-## Demo
-
-<!-- TODO: add screenshots -->
 
 ## How it works
 

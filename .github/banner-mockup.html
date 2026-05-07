@@ -61,10 +61,10 @@
   }
   .app-text .wordmark .accent { color: #58CC02; }
   .app-text .wordmark .vinyl-o {
-    width: 96px;
-    height: 96px;
+    width: 78px;
+    height: 78px;
     display: inline-block;
-    margin: 0 -3px -11px -3px;
+    margin: 0 -1px -3px -1px;
   }
   .app-text h1 {
     font-family: 'Nunito', sans-serif;
@@ -102,7 +102,7 @@
 
   .phone-stage {
     position: relative;
-    width: 700px;
+    width: 660px;
     height: 100%;
     flex-shrink: 0;
     display: flex;
@@ -111,24 +111,68 @@
   }
   .phone-stage .bg-card {
     position: absolute;
-    width: 150px;
-    height: 150px;
-    border-radius: 12px;
+    width: 170px;
+    height: 170px;
+    border-radius: 14px;
     box-shadow: 0 14px 28px -10px rgba(0,0,0,0.7);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 14px 12px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .phone-stage .bg-card .corner {
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 8px;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    opacity: 0.55;
+  }
+  .phone-stage .bg-card .year {
     font-family: 'Fraunces', serif;
     font-weight: 900;
-    font-size: 40px;
+    font-size: 54px;
     letter-spacing: -0.02em;
+    line-height: 1;
+    text-align: center;
   }
-  .phone-stage .bg-card.b1 { background: #d4a857; color: #0F172A; transform: rotate(-22deg) scale(1.05); top: 60px; left: 0; }
-  .phone-stage .bg-card.b2 { background: #ec5b8d; color: white; transform: rotate(-14deg) scale(0.9); top: 240px; left: 40px; z-index: 1; }
-  .phone-stage .bg-card.b3 { background: #c8e84a; color: #0F172A; transform: rotate(18deg) scale(1.05); top: 70px; right: 0; }
-  .phone-stage .bg-card.b4 { background: #f97a6b; color: #0F172A; transform: rotate(12deg) scale(0.9); top: 250px; right: 40px; z-index: 1; }
+  .phone-stage .bg-card .artist {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    line-height: 1.15;
+    margin-top: 6px;
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .phone-stage .bg-card .title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 1.15;
+    margin-top: 2px;
+    opacity: 0.85;
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .phone-stage .bg-card.b1 { background: #0d1422; color: white; transform: rotate(-22deg) scale(1.05); top: 50px; left: 25px; }
+  .phone-stage .bg-card.b2 { background: #d4a857; color: #0F172A; transform: rotate(-14deg) scale(0.9); top: 240px; left: 65px; z-index: 1; }
+  .phone-stage .bg-card.b3 { background: #ec5b8d; color: white; transform: rotate(18deg) scale(1.05); top: 60px; right: 25px; }
+  .phone-stage .bg-card.b4 { background: #8b5cf6; color: white; transform: rotate(12deg) scale(0.9); top: 250px; right: 65px; z-index: 1; }
   .phone-frame {
-    width: 320px;
+    width: 280px;
     height: 500px;
     box-sizing: border-box;
     background: #0a0e1a;
@@ -157,19 +201,7 @@
   }
   .phone-screen .ph-vinyl {
     width: 36px; height: 36px;
-    border-radius: 50%;
-    background: #0F172A;
-    border: 2.5px solid #58CC02;
-    position: relative;
-  }
-  .phone-screen .ph-vinyl::after {
-    content: ''; display: block;
-    width: 11px; height: 11px;
-    background: #FF6BB5;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
+    flex-shrink: 0;
   }
   .phone-screen .ph-wordmark {
     font-family: 'Nunito', sans-serif;
@@ -185,6 +217,15 @@
     border-radius: 14px;
     padding: 14px 16px 16px;
     margin-top: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+  .phone-screen .ph-hero .deco-vinyl {
+    position: absolute;
+    width: 110px; height: 110px;
+    top: -36px; right: -36px;
+    opacity: 0.20;
+    pointer-events: none;
   }
   .phone-screen .ph-pill {
     background: rgba(88,204,2,0.15);
@@ -210,7 +251,6 @@
   .phone-screen .ph-cta {
     background: #58CC02;
     color: #0F172A;
-    text-align: center;
     padding: 9px;
     border-radius: 10px;
     font-family: 'Nunito', sans-serif;
@@ -219,6 +259,14 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
     box-shadow: 0 4px 0 0 #4AA802;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .phone-screen .ph-cta .cam-icon {
+    width: 16px; height: 16px;
+    flex-shrink: 0;
   }
   .phone-screen .ph-deck {
     background: #16213F;
@@ -262,20 +310,58 @@
       </div>
     </div>
     <div class="phone-stage">
-      <div class="bg-card b1">1971</div>
-      <div class="bg-card b2">1985</div>
-      <div class="bg-card b3">1999</div>
-      <div class="bg-card b4">2024</div>
+      <div class="bg-card b1">
+        <div class="year">1958</div>
+        <div class="artist">Chuck Berry</div>
+        <div class="title">Johnny B. Goode</div>
+      </div>
+      <div class="bg-card b2">
+        <div class="year">1971</div>
+        <div class="artist">Led Zeppelin</div>
+        <div class="title">Stairway to Heaven</div>
+      </div>
+      <div class="bg-card b3">
+        <div class="year">1985</div>
+        <div class="artist">a-ha</div>
+        <div class="title">Take On Me</div>
+      </div>
+      <div class="bg-card b4">
+        <div class="year">2013</div>
+        <div class="artist">Daft Punk</div>
+        <div class="title">Get Lucky</div>
+      </div>
       <div class="phone-frame">
         <div class="phone-screen">
           <div class="ph-header">
-            <div class="ph-vinyl"></div>
+            <svg class="ph-vinyl" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="brand mark">
+              <circle cx="32" cy="32" r="30" fill="#0F172A" stroke="#58CC02" stroke-width="3"></circle>
+              <circle cx="32" cy="32" r="22" fill="none" stroke="#1F2D54" stroke-width="1.5"></circle>
+              <circle cx="32" cy="32" r="17" fill="none" stroke="#1F2D54" stroke-width="1.5"></circle>
+              <circle cx="32" cy="32" r="12" fill="none" stroke="#1F2D54" stroke-width="1.5"></circle>
+              <circle cx="32" cy="32" r="7" fill="#FF6BB5"></circle>
+              <circle cx="32" cy="32" r="2" fill="#0F172A"></circle>
+              <path d="M14 22 a20 20 0 0 1 12 -10" stroke="#FFFFFF" stroke-opacity=".25" stroke-width="2" stroke-linecap="round" fill="none"></path>
+            </svg>
             <div class="ph-wordmark">to<span class="accent">carta</span></div>
           </div>
           <div class="ph-hero">
+            <svg class="deco-vinyl" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="32" cy="32" r="30" fill="#0F172A" stroke="#58CC02" stroke-width="3"></circle>
+              <circle cx="32" cy="32" r="22" fill="none" stroke="#1F2D54" stroke-width="1.5"></circle>
+              <circle cx="32" cy="32" r="17" fill="none" stroke="#1F2D54" stroke-width="1.5"></circle>
+              <circle cx="32" cy="32" r="12" fill="none" stroke="#1F2D54" stroke-width="1.5"></circle>
+              <circle cx="32" cy="32" r="7" fill="#FF6BB5"></circle>
+              <circle cx="32" cy="32" r="2" fill="#0F172A"></circle>
+            </svg>
             <span class="ph-pill">Ready to play</span>
             <div class="ph-headline">Scan a card to start the round.</div>
-            <div class="ph-cta">Open scanner</div>
+            <div class="ph-cta">
+              <svg class="cam-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" fill="#0F172A"/>
+                <circle cx="12" cy="13" r="3.2" fill="#58CC02" stroke="#0F172A" stroke-width="1.6"/>
+              </svg>
+              Open scanner
+            </div>
           </div>
           <div class="ph-deck">
             <div class="name">Yacht Club Mix</div>
