@@ -8,6 +8,7 @@ import { DeckCard } from '@/components/library/DeckCard';
 import { EmptyLibrary } from '@/components/library/EmptyLibrary';
 import { FirstLaunchBanner } from '@/components/library/FirstLaunchBanner';
 import { NewDeckFAB } from '@/components/library/NewDeckFAB';
+import { ScanCTA } from '@/components/library/ScanCTA';
 import { Wordmark } from '@/components/library/Wordmark';
 import { deckLibrary } from '@/lib/deck-library';
 import type { Deck } from '@/lib/types';
@@ -90,6 +91,7 @@ export default function LibraryScreen() {
         <Wordmark className="text-foreground" />
       </View>
       <FirstLaunchBanner />
+      <ScanCTA onPress={() => router.push('/scan')} className="mt-2 mb-4" />
       {state.kind === 'loading' && (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator color={LIME} />
@@ -100,7 +102,7 @@ export default function LibraryScreen() {
         <FlatList
           data={state.decks}
           keyExtractor={(deck) => deck.id}
-          contentContainerClassName="px-6 pt-4 pb-32 gap-3"
+          contentContainerClassName="px-6 pt-2 pb-32 gap-3"
           renderItem={({ item }) => (
             <DeckCard
               deck={item}
