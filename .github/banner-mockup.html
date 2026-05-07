@@ -55,8 +55,17 @@
     text-transform: lowercase;
     color: white;
     margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0;
   }
   .app-text .wordmark .accent { color: #58CC02; }
+  .app-text .wordmark .vinyl-o {
+    width: 122px;
+    height: 122px;
+    display: inline-block;
+    margin: 0 -6px -24px -6px;
+  }
   .app-text h1 {
     font-family: 'Nunito', sans-serif;
     font-weight: 900;
@@ -93,7 +102,7 @@
 
   .phone-stage {
     position: relative;
-    width: 640px;
+    width: 700px;
     height: 100%;
     flex-shrink: 0;
     display: flex;
@@ -102,8 +111,8 @@
   }
   .phone-stage .bg-card {
     position: absolute;
-    width: 130px;
-    height: 186px;
+    width: 150px;
+    height: 150px;
     border-radius: 12px;
     box-shadow: 0 14px 28px -10px rgba(0,0,0,0.7);
     display: flex;
@@ -114,12 +123,12 @@
     font-size: 40px;
     letter-spacing: -0.02em;
   }
-  .phone-stage .bg-card.b1 { background: #d4a857; color: #0F172A; transform: rotate(-22deg) scale(1.1); top: 50px; left: 30px; }
-  .phone-stage .bg-card.b2 { background: #ec5b8d; color: white; transform: rotate(-16deg) scale(0.92); top: 220px; left: 80px; z-index: 1; }
-  .phone-stage .bg-card.b3 { background: #c8e84a; color: #0F172A; transform: rotate(18deg) scale(1.08); top: 80px; right: 20px; }
-  .phone-stage .bg-card.b4 { background: #f97a6b; color: #0F172A; transform: rotate(12deg) scale(0.94); top: 230px; right: 60px; z-index: 1; }
+  .phone-stage .bg-card.b1 { background: #d4a857; color: #0F172A; transform: rotate(-22deg) scale(1.05); top: 60px; left: 0; }
+  .phone-stage .bg-card.b2 { background: #ec5b8d; color: white; transform: rotate(-14deg) scale(0.9); top: 240px; left: 40px; z-index: 1; }
+  .phone-stage .bg-card.b3 { background: #c8e84a; color: #0F172A; transform: rotate(18deg) scale(1.05); top: 70px; right: 0; }
+  .phone-stage .bg-card.b4 { background: #f97a6b; color: #0F172A; transform: rotate(12deg) scale(0.9); top: 250px; right: 40px; z-index: 1; }
   .phone-frame {
-    width: 240px;
+    width: 320px;
     height: 500px;
     background: #0a0e1a;
     border-radius: 32px;
@@ -135,24 +144,24 @@
     width: 100%;
     height: 100%;
     background: #0F172A;
-    padding: 28px 16px 0;
+    padding: 28px 20px 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
   }
   .phone-screen .ph-header {
-    display: flex; align-items: center; gap: 8px;
+    display: flex; align-items: center; gap: 10px;
   }
   .phone-screen .ph-vinyl {
-    width: 28px; height: 28px;
+    width: 36px; height: 36px;
     border-radius: 50%;
     background: #0F172A;
-    border: 2px solid #58CC02;
+    border: 2.5px solid #58CC02;
     position: relative;
   }
   .phone-screen .ph-vinyl::after {
     content: ''; display: block;
-    width: 8px; height: 8px;
+    width: 11px; height: 11px;
     background: #FF6BB5;
     border-radius: 50%;
     position: absolute;
@@ -162,7 +171,7 @@
   .phone-screen .ph-wordmark {
     font-family: 'Nunito', sans-serif;
     font-weight: 900;
-    font-size: 14px;
+    font-size: 19px;
     color: white;
     letter-spacing: -0.02em;
   }
@@ -171,7 +180,7 @@
     background: linear-gradient(135deg, #16213F 0%, #1F2D54 100%);
     border: 1.5px solid #2A3D6E;
     border-radius: 14px;
-    padding: 14px 14px 16px;
+    padding: 14px 16px 16px;
     margin-top: 4px;
   }
   .phone-screen .ph-pill {
@@ -180,17 +189,17 @@
     color: #58CC02;
     font-family: 'Nunito', sans-serif;
     font-weight: 800;
-    font-size: 8px;
+    font-size: 10px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 999px;
     display: inline-block;
   }
   .phone-screen .ph-headline {
     font-family: 'Nunito', sans-serif;
     font-weight: 900;
-    font-size: 14px;
+    font-size: 17px;
     color: white;
     line-height: 1.15;
     margin: 8px 0 10px;
@@ -199,32 +208,32 @@
     background: #58CC02;
     color: #0F172A;
     text-align: center;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 9px;
+    border-radius: 10px;
     font-family: 'Nunito', sans-serif;
     font-weight: 900;
-    font-size: 11px;
+    font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    box-shadow: 0 3px 0 0 #4AA802;
+    box-shadow: 0 4px 0 0 #4AA802;
   }
   .phone-screen .ph-deck {
     background: #16213F;
     border: 1.5px solid #2A3D6E;
     border-radius: 12px;
-    padding: 12px;
-    margin-top: 4px;
+    padding: 11px 14px;
+    margin-top: 2px;
   }
   .phone-screen .ph-deck .name {
     font-family: 'Nunito', sans-serif;
     font-weight: 900;
-    font-size: 12px;
+    font-size: 14px;
     color: white;
   }
   .phone-screen .ph-deck .meta {
     font-family: 'Nunito', sans-serif;
     font-weight: 700;
-    font-size: 9px;
+    font-size: 10px;
     color: #C4CCDF;
     margin-top: 4px;
   }
@@ -240,7 +249,7 @@
   <div class="banner">
     <div class="app-text">
       <div class="eyebrow">Self-hosted · Open source · Android</div>
-      <div class="wordmark">to<span class="accent">carta</span></div>
+      <div class="wordmark"><span>t</span><svg class="vinyl-o" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="o"><circle cx="32" cy="32" r="30" fill="#0F172A" stroke="#58CC02" stroke-width="3"></circle><circle cx="32" cy="32" r="22" fill="none" stroke="#1F2D54" stroke-width="1.5"></circle><circle cx="32" cy="32" r="17" fill="none" stroke="#1F2D54" stroke-width="1.5"></circle><circle cx="32" cy="32" r="12" fill="none" stroke="#1F2D54" stroke-width="1.5"></circle><circle cx="32" cy="32" r="7" fill="#FF6BB5"></circle><circle cx="32" cy="32" r="2" fill="#0F172A"></circle><path d="M14 22 a20 20 0 0 1 12 -10" stroke="#FFFFFF" stroke-opacity=".25" stroke-width="2" stroke-linecap="round" fill="none"></path></svg><span class="accent">carta</span></div>
       <h1>A music year-guessing card game.</h1>
       <div class="sub">Paste a Deezer playlist, print the cards, scan during play. The app plays a preview without revealing the song. Flip the card to score.</div>
       <div class="pills">
