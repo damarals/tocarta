@@ -6,12 +6,6 @@
 #               `eas build` non-interactively.
 # The default GITHUB_TOKEN (provided by Actions) is used by `gh release`
 # to create the release and upload the APK.
-#
-# Optional repository variables / secrets:
-#   ANDROID_SIGNING_FINGERPRINT  SHA-256 fingerprint of the production signing
-#               key (retrieve with `eas credentials --platform android`).
-#               If unset, a placeholder is written into the release notes and
-#               the maintainer must edit the release before publishing.
 name: Release
 
 on:
@@ -79,12 +73,7 @@ jobs:
       - name: Generate release notes
         run: |
           TAG="${GITHUB_REF_NAME}"
-          FINGERPRINT="${{ secrets.ANDROID_SIGNING_FINGERPRINT }}"
-          if [ -n "$FINGERPRINT" ]; then
-            scripts/release-notes.sh "$TAG" "$APK_PATH" "$FINGERPRINT" > release-notes.md
-          else
-            scripts/release-notes.sh "$TAG" "$APK_PATH" > release-notes.md
-          fi
+          scripts/release-notes.sh "$TAG" "$APK_PATH" > release-notes.md
 
       - name: Create GitHub Release and upload APK
         env:

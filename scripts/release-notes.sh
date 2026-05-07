@@ -2,27 +2,22 @@
 # Generate the GitHub Release notes body for a Tocarta tagged release.
 #
 # Usage:
-#   scripts/release-notes.sh <tag> <apk-path> [fingerprint]
+#   scripts/release-notes.sh <tag> <apk-path>
 #
 # Arguments:
-#   tag          The release tag (e.g. v0.1.0).
-#   apk-path     Path to the built APK.
-#   fingerprint  Optional SHA-256 signing key fingerprint. If omitted, a
-#                placeholder is written and the maintainer must edit the
-#                release before publishing. Retrieve with:
-#                    eas credentials --platform android
+#   tag       The release tag (e.g. v0.1.0).
+#   apk-path  Path to the built APK.
 #
 # Output: prints the release-notes Markdown to stdout.
 set -euo pipefail
 
-if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then
-  echo "usage: $0 <tag> <apk-path> [fingerprint]" >&2
+if [ "$#" -ne 2 ]; then
+  echo "usage: $0 <tag> <apk-path>" >&2
   exit 1
 fi
 
 TAG="$1"
 APK_PATH="$2"
-FINGERPRINT="${3:-<paste from \`eas credentials --platform android\`>}"
 
 if [ ! -f "$APK_PATH" ]; then
   echo "error: APK not found at $APK_PATH" >&2
@@ -40,7 +35,6 @@ Android APK for sideload. Tocarta is an unofficial, independent, fan-made music 
 ### Verify the download
 
 - SHA-256: \`${SHA256}\`
-- Signing key fingerprint: \`${FINGERPRINT}\`
 
 On your computer:
 
