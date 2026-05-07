@@ -336,7 +336,7 @@ function OfflineBanner() {
       style={{ backgroundColor: tokens.colors.red }}
     >
       <Text className="font-body text-base font-bold" style={{ color: '#fff' }}>
-        No internet — audio can&apos;t play
+        No internet — can&apos;t load this card. Reconnect to keep playing.
       </Text>
     </View>
   );
