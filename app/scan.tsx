@@ -5,14 +5,16 @@ import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
-  Dimensions,
   Easing,
-  Pressable,
   StyleSheet,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Dot } from '@/components/ui/dot';
+import { IconButton } from '@/components/ui/icon-button';
+import { Pill } from '@/components/ui/pill';
+import { PushButton } from '@/components/ui/push-button';
 import { Text } from '@/components/ui/text';
 import { parseCardCode } from '@/lib/card-code-validator';
 import { tokens } from '@/theme/tokens';
@@ -21,27 +23,26 @@ type ScanState =
   /** Camera is live, looking for a code. Lime corners + animated scan beam. */
   | { kind: 'aiming' }
   /** A QR was detected; validating. Pink corners + "checking…". */
-  | { kind: 'found' }
+  | { kind: 'found'; payload: string }
   /** A valid Tocarta code was parsed. Pink corners + check. */
   | { kind: 'locked'; payload: string };
 
-const VIEWFINDER_RATIO = 0.7;
-const CORNER_LENGTH = 28;
-const CORNER_THICKNESS = 4;
+const VIEWFINDER_SIZE = 240;
+const CORNER_LENGTH = 32;
+const CORNER_THICKNESS = 3;
+const CORNER_RADIUS = 14;
 const FOUND_TO_LOCKED_MS = 200;
 const LOCKED_TO_NAVIGATE_MS = 300;
 const INVALID_FLASH_MS = 600;
-const TOAST_VISIBLE_MS = 1600;
 
 const PERMISSION_DENIAL_COPY =
-  'Tocarta needs the camera to scan cards. Open Settings to grant access.';
+  'Tocarta needs the camera to scan cards.';
 
 export default function ScanScreen() {
   const router = useRouter();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanState, setScanState] = useState<ScanState>({ kind: 'aiming' });
   const [invalidFlash, setInvalidFlash] = useState(false);
-  const [toastVisible, setToastVisible] = useState(false);
   // Once a valid code is locked, ignore further callbacks so we don't double-fire.
   const lockedRef = useRef(false);
 
@@ -58,17 +59,15 @@ export default function ScanScreen() {
 
       const parsed = parseCardCode(data);
       if (parsed === null) {
-        // Invalid scan: flash corners red, show toast, stay in aiming.
+        // Invalid scan: flash corners red, stay in aiming.
         setInvalidFlash(true);
-        setToastVisible(true);
         setTimeout(() => setInvalidFlash(false), INVALID_FLASH_MS);
-        setTimeout(() => setToastVisible(false), TOAST_VISIBLE_MS);
         return;
       }
 
-      // Valid scan: visual progression aiming → found → locked → navigate.
+      // Valid scan: aiming → found → locked → navigate.
       lockedRef.current = true;
-      setScanState({ kind: 'found' });
+      setScanState({ kind: 'found', payload: data });
       setTimeout(() => {
         setScanState({ kind: 'locked', payload: data });
         setTimeout(() => {
@@ -85,112 +84,142 @@ export default function ScanScreen() {
   }
 
   if (!permission.granted) {
-    return <PermissionDeniedView canAskAgain={permission.canAskAgain} onAsk={requestPermission} />;
+    return (
+      <PermissionDeniedView
+        canAskAgain={permission.canAskAgain}
+        onAsk={requestPermission}
+      />
+    );
   }
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-black">
       <CameraView
         style={StyleSheet.absoluteFill}
         facing="back"
         barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
         onBarcodeScanned={handleBarcode}
       />
-      <Viewfinder state={scanState} invalidFlash={invalidFlash} />
-      {toastVisible && <Toast message="Not a Tocarta card" />}
+      <ScannerChrome
+        scanState={scanState}
+        invalidFlash={invalidFlash}
+        onClose={() => router.back()}
+      />
     </View>
   );
 }
 
-function PermissionDeniedView({
-  canAskAgain,
-  onAsk,
-}: {
-  canAskAgain: boolean;
-  onAsk: () => void;
-}) {
+type ScannerChromeProps = {
+  scanState: ScanState;
+  invalidFlash: boolean;
+  onClose: () => void;
+};
+
+function ScannerChrome({
+  scanState,
+  invalidFlash,
+  onClose,
+}: ScannerChromeProps): React.ReactElement {
   return (
-    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} className="flex-1 bg-background">
-      <View className="flex-1 items-center justify-center px-8 gap-6">
-        <Ionicons name="camera-outline" size={48} color={tokens.colors.lime} />
-        <Text className="font-display text-foreground text-2xl text-center leading-snug">
-          {PERMISSION_DENIAL_COPY}
-        </Text>
-        <Pressable
-          onPress={canAskAgain ? onAsk : () => Linking.openSettings()}
-          role="button"
-          accessibilityLabel="Open Settings"
-          className="rounded-full bg-primary px-6 py-3 active:bg-primary/90"
+    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} className="flex-1">
+      {/* Top bar */}
+      <View
+        pointerEvents="box-none"
+        className="flex-row items-center justify-between px-4 py-3.5"
+        style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+      >
+        <IconButton
+          size={40}
+          surfaceClass="bg-black/50"
+          shadowColor="rgba(0,0,0,0.7)"
+          onPress={onClose}
+          accessibilityLabel="Close scanner"
         >
-          <Text className="font-body text-primary-foreground text-base font-bold">
-            {canAskAgain ? 'Allow camera' : 'Open Settings'}
+          <Ionicons name="close" size={20} color="#fff" />
+        </IconButton>
+        <Pill tone="lime">
+          <Dot color="lime" pulse />
+          <Text
+            className="text-limeL"
+            style={{
+              fontFamily: 'Nunito_800ExtraBold',
+              fontSize: 11,
+              letterSpacing: 1.4,
+              textTransform: 'uppercase',
+            }}
+          >
+            Scanning
           </Text>
-        </Pressable>
+        </Pill>
+        <View style={{ width: 40 }} />
       </View>
+
+      {/* Viewfinder */}
+      <View pointerEvents="none" className="flex-1 items-center justify-center">
+        <Viewfinder scanState={scanState} invalidFlash={invalidFlash} />
+      </View>
+
+      {/* Bottom hint */}
+      <BottomHint scanState={scanState} invalidFlash={invalidFlash} />
     </SafeAreaView>
   );
 }
 
-function Viewfinder({ state, invalidFlash }: { state: ScanState; invalidFlash: boolean }) {
-  const screenWidth = Dimensions.get('window').width;
-  const size = Math.round(screenWidth * VIEWFINDER_RATIO);
+type ViewfinderProps = {
+  scanState: ScanState;
+  invalidFlash: boolean;
+};
 
+function Viewfinder({
+  scanState,
+  invalidFlash,
+}: ViewfinderProps): React.ReactElement {
   const cornerColor = invalidFlash
     ? tokens.colors.red
-    : state.kind === 'aiming'
+    : scanState.kind === 'aiming'
       ? tokens.colors.lime
       : tokens.colors.pink;
 
   return (
-    <View pointerEvents="none" className="absolute inset-0 items-center justify-center">
-      <View style={{ width: size, height: size }}>
-        <Corner color={cornerColor} corner="topLeft" />
-        <Corner color={cornerColor} corner="topRight" />
-        <Corner color={cornerColor} corner="bottomLeft" />
-        <Corner color={cornerColor} corner="bottomRight" />
-        {state.kind === 'aiming' && <ScanBeam height={size} color={tokens.colors.lime} />}
-      </View>
-      <View className="mt-6 px-4 py-2">
-        <SubtitleForState state={state} invalidFlash={invalidFlash} />
-      </View>
+    <View style={{ width: VIEWFINDER_SIZE, height: VIEWFINDER_SIZE }}>
+      <Corner color={cornerColor} corner="topLeft" />
+      <Corner color={cornerColor} corner="topRight" />
+      <Corner color={cornerColor} corner="bottomLeft" />
+      <Corner color={cornerColor} corner="bottomRight" />
+      {scanState.kind === 'aiming' && <ScanBeam />}
+      {scanState.kind !== 'aiming' && (
+        <View
+          style={{
+            position: 'absolute',
+            inset: 0,
+            borderRadius: CORNER_RADIUS,
+            backgroundColor: 'rgba(255,107,181,0.10)',
+          }}
+        />
+      )}
     </View>
-  );
-}
-
-function SubtitleForState({ state, invalidFlash }: { state: ScanState; invalidFlash: boolean }) {
-  if (invalidFlash) {
-    return (
-      <Text className="font-body text-foreground text-base font-bold">
-        Not a Tocarta card
-      </Text>
-    );
-  }
-  if (state.kind === 'aiming') {
-    return (
-      <Text className="font-body text-foreground text-base">
-        Aim at a Tocarta card
-      </Text>
-    );
-  }
-  if (state.kind === 'found') {
-    return (
-      <Text className="font-body text-foreground text-base">
-        checking…
-      </Text>
-    );
-  }
-  return (
-    <Text className="font-body text-pink text-base font-bold">
-      {'✓'} looks good
-    </Text>
   );
 }
 
 type CornerName = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 
 function Corner({ color, corner }: { color: string; corner: CornerName }) {
-  const horizontal: 'left' | 'right' = corner === 'topLeft' || corner === 'bottomLeft' ? 'left' : 'right';
-  const vertical: 'top' | 'bottom' = corner === 'topLeft' || corner === 'topRight' ? 'top' : 'bottom';
+  const horizontal: 'left' | 'right' =
+    corner === 'topLeft' || corner === 'bottomLeft' ? 'left' : 'right';
+  const vertical: 'top' | 'bottom' =
+    corner === 'topLeft' || corner === 'topRight' ? 'top' : 'bottom';
+
+  // Match-by-corner border-radius mirrors the proto's 14px-rounded outer
+  // bracket. RN doesn't compose `borderTopLeftRadius` with directional
+  // borders cleanly, so we set the matching corner radius explicitly.
+  const radius =
+    corner === 'topLeft'
+      ? { borderTopLeftRadius: CORNER_RADIUS }
+      : corner === 'topRight'
+        ? { borderTopRightRadius: CORNER_RADIUS }
+        : corner === 'bottomLeft'
+          ? { borderBottomLeftRadius: CORNER_RADIUS }
+          : { borderBottomRightRadius: CORNER_RADIUS };
 
   return (
     <View
@@ -205,61 +234,189 @@ function Corner({ color, corner }: { color: string; corner: CornerName }) {
         borderBottomWidth: vertical === 'bottom' ? CORNER_THICKNESS : 0,
         borderLeftWidth: horizontal === 'left' ? CORNER_THICKNESS : 0,
         borderRightWidth: horizontal === 'right' ? CORNER_THICKNESS : 0,
+        ...radius,
       }}
     />
   );
 }
 
-function ScanBeam({ height, color }: { height: number; color: string }) {
+function ScanBeam(): React.ReactElement {
+  // 1.6s top→bottom beam with the proto's tc-scan ease cubic-bezier(.2,.8,.2,1).
   const translate = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const range = Math.max(1, height - CORNER_THICKNESS);
     const loop = Animated.loop(
-      Animated.sequence([
+      Animated.parallel([
         Animated.timing(translate, {
-          toValue: range,
-          duration: 1400,
-          easing: Easing.inOut(Easing.quad),
+          toValue: 1,
+          duration: 1600,
+          easing: Easing.bezier(0.2, 0.8, 0.2, 1),
           useNativeDriver: true,
         }),
-        Animated.timing(translate, {
-          toValue: 0,
-          duration: 1400,
-          easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
-        }),
+        Animated.sequence([
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: 160,
+            useNativeDriver: true,
+          }),
+          Animated.delay(1280),
+          Animated.timing(opacity, {
+            toValue: 0,
+            duration: 160,
+            useNativeDriver: true,
+          }),
+        ]),
       ]),
     );
     loop.start();
-    return () => loop.stop();
-  }, [height, translate]);
+    return () => {
+      loop.stop();
+      translate.setValue(0);
+      opacity.setValue(0);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Animated.View
       style={{
         position: 'absolute',
-        left: CORNER_LENGTH / 2,
-        right: CORNER_LENGTH / 2,
+        left: 4,
+        right: 4,
         top: 0,
         height: 2,
-        backgroundColor: color,
-        opacity: 0.85,
-        transform: [{ translateY: translate }],
+        backgroundColor: tokens.colors.lime,
+        opacity,
+        transform: [
+          {
+            translateY: translate.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, VIEWFINDER_SIZE - CORNER_THICKNESS],
+            }),
+          },
+        ],
       }}
     />
   );
 }
 
-function Toast({ message }: { message: string }) {
+type BottomHintProps = {
+  scanState: ScanState;
+  invalidFlash: boolean;
+};
+
+function BottomHint({
+  scanState,
+  invalidFlash,
+}: BottomHintProps): React.ReactElement {
+  const headline = invalidFlash
+    ? 'Not a Tocarta card'
+    : scanState.kind === 'aiming'
+      ? 'Point at a Tocarta card.'
+      : scanState.kind === 'found'
+        ? 'Card detected.'
+        : 'Loading preview…';
+
+  const monoLine =
+    scanState.kind === 'found' || scanState.kind === 'locked'
+      ? scanState.payload
+      : '';
+
+  const headlineColor = invalidFlash ? tokens.colors.red : '#fff';
+  const monoColor =
+    scanState.kind === 'locked' ? tokens.colors.pink : tokens.colors.navy200;
+
+  return (
+    <View
+      style={{
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        paddingHorizontal: 24,
+        paddingTop: 20,
+        paddingBottom: 12,
+      }}
+    >
+      <Text
+        accessibilityLabel="Scanner status"
+        style={{
+          fontFamily: 'Nunito_900Black',
+          fontSize: 18,
+          lineHeight: 22,
+          color: headlineColor,
+          textAlign: 'center',
+          letterSpacing: -0.18,
+        }}
+      >
+        {headline}
+      </Text>
+      <Text
+        style={{
+          marginTop: 6,
+          fontFamily: 'JetBrainsMono_500Medium',
+          fontSize: 11,
+          lineHeight: 14,
+          color: monoColor,
+          textAlign: 'center',
+        }}
+      >
+        {monoLine}
+      </Text>
+    </View>
+  );
+}
+
+function PermissionDeniedView({
+  canAskAgain,
+  onAsk,
+}: {
+  canAskAgain: boolean;
+  onAsk: () => void;
+}) {
   return (
     <SafeAreaView
-      pointerEvents="none"
-      edges={['bottom']}
-      className="absolute inset-x-0 bottom-0 items-center"
+      edges={['top', 'left', 'right', 'bottom']}
+      className="flex-1 bg-background"
     >
-      <View className="mb-8 rounded-full bg-navy900/90 px-5 py-3 border border-red">
-        <Text className="font-body text-foreground text-sm">{message}</Text>
+      <View className="flex-1 items-center justify-center px-8 gap-5">
+        <View className="rounded-3xl border-[1.5px] border-navy600 bg-navy800 p-6 items-center gap-4">
+          <Ionicons
+            name="camera-outline"
+            size={40}
+            color={tokens.colors.lime}
+          />
+          <Text
+            className="text-foreground text-center"
+            style={{
+              fontFamily: 'Nunito_900Black',
+              fontSize: 22,
+              lineHeight: 26,
+              letterSpacing: -0.36,
+            }}
+          >
+            {PERMISSION_DENIAL_COPY}
+          </Text>
+          <Text
+            className="text-navy200 text-center"
+            style={{
+              fontFamily: 'Nunito_600SemiBold',
+              fontSize: 14,
+              lineHeight: 20,
+              maxWidth: 260,
+            }}
+          >
+            {canAskAgain
+              ? 'Allow camera access to scan a card.'
+              : 'Open Settings to grant access.'}
+          </Text>
+          <PushButton
+            variant="primary"
+            size="md"
+            onPress={canAskAgain ? onAsk : () => Linking.openSettings()}
+            accessibilityLabel={canAskAgain ? 'Allow camera' : 'Open Settings'}
+          >
+            {canAskAgain ? 'Allow camera' : 'Open Settings'}
+          </PushButton>
+        </View>
       </View>
     </SafeAreaView>
   );
