@@ -1,8 +1,14 @@
 // Anti-spoiler discipline (ADR-0009): visualisations are PURELY decorative.
 // The bar heights are driven by random offsets seeded at mount, not by any
 // audio-frequency analysis or track-identifying input.
+//
+// Layout per docs/design/screens.jsx:1019-1041 — 24 bars, each width 6px,
+// gap 4px, fading from pink at the bottom toward gold at the top. RN
+// doesn't render a true linear gradient without an extra dep; we stack a
+// pink slug under a gold cap to fake the `linear-gradient(180deg, pink, gold)`
+// look while keeping the install footprint zero.
 import { useEffect, useMemo, useRef } from 'react';
-import { Animated, Easing, View } from 'react-native';
+import { Animated, Easing, Platform, View } from 'react-native';
 
 import { tokens } from '@/theme/tokens';
 
@@ -10,6 +16,7 @@ const BAR_COUNT = 24;
 const FRAME_HEIGHT = 180;
 const BAR_WIDTH = 6;
 const BAR_GAP = 4;
+const GOLD_CAP_HEIGHT = 14;
 
 export function BarsVisual({ active }: { active: boolean }) {
   // Pre-compute a stable per-bar phase offset so the dance feels organic
@@ -73,9 +80,32 @@ export function BarsVisual({ active }: { active: boolean }) {
               width: BAR_WIDTH,
               height,
               borderRadius: BAR_WIDTH / 2,
-              backgroundColor: i % 3 === 0 ? tokens.colors.pink : tokens.colors.lime,
+              backgroundColor: tokens.colors.pink,
+              overflow: 'hidden',
+              ...Platform.select({
+                ios: {
+                  shadowColor: tokens.colors.pink,
+                  shadowOpacity: 0.4,
+                  shadowRadius: 12,
+                  shadowOffset: { width: 0, height: 0 },
+                },
+                default: {},
+              }),
             }}
-          />
+          >
+            {/* Gold cap fakes the bottom-up pink→gold gradient. */}
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: GOLD_CAP_HEIGHT,
+                backgroundColor: tokens.colors.gold,
+                opacity: 0.85,
+              }}
+            />
+          </Animated.View>
         );
       })}
     </View>
