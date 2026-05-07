@@ -57,6 +57,11 @@ export default function RootLayout() {
           options={{ title: '', headerBackVisible: false, gestureEnabled: false }}
         />
         <Stack.Screen name="deck/[id]" options={{ title: '' }} />
+        <Stack.Screen
+          name="review/[id]"
+          options={{ title: '', headerBackVisible: false, gestureEnabled: false }}
+        />
+        <Stack.Screen name="export/[id]" options={{ title: '' }} />
       </Stack>
       <StatusBar style="light" />
     </SafeAreaProvider>
