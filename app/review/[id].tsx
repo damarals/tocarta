@@ -10,13 +10,18 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/ui/button';
+import { Dot } from '@/components/ui/dot';
+import { InlineAlert } from '@/components/ui/inline-alert';
+import { Pill } from '@/components/ui/pill';
+import { PushButton } from '@/components/ui/push-button';
+import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import type { DroppedTrack } from '@/lib/deck-generator';
 import { deckLibrary } from '@/lib/deck-library';
 import { takePostGenerationDrops } from '@/lib/post-generation-store';
 import type { Card, Deck } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { tokens } from '@/theme/tokens';
 
 type LoadState =
   | { kind: 'loading' }
@@ -27,8 +32,6 @@ type ReviewRow =
   | { kind: 'kept'; card: Card }
   | { kind: 'dropped'; track: DroppedTrack };
 
-const LIME = 'rgb(200 232 74)';
-const NAVY200 = 'rgb(168 179 199)';
 const MIN_VALID_YEAR = 1900;
 const MAX_VALID_YEAR = new Date().getFullYear();
 
@@ -96,28 +99,34 @@ export default function ReviewScreen() {
   );
 
   return (
-    <SafeAreaView edges={['top', 'left', 'right']} className="flex-1 bg-background">
+    <SafeAreaView edges={['left', 'right']} className="flex-1 bg-background">
       {state.kind === 'loading' && (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={LIME} />
+          <ActivityIndicator color={tokens.colors.lime} />
         </View>
       )}
 
       {state.kind === 'not-found' && (
         <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-muted-foreground text-base text-center">
+          <Text
+            className="font-display text-foreground text-center"
+            style={{
+              fontFamily: 'Nunito_900Black',
+              fontSize: 22,
+              lineHeight: 26,
+              letterSpacing: -0.36,
+            }}
+          >
             Deck not found.
           </Text>
-          <Pressable
+          <PushButton
+            variant="primary"
+            size="md"
             onPress={() => router.replace('/')}
-            role="button"
             accessibilityLabel="Back to library"
-            className="items-center justify-center rounded-full bg-primary px-6 py-3 active:bg-primary/90"
           >
-            <Text className="font-body text-primary-foreground text-base font-bold">
-              Back to library
-            </Text>
-          </Pressable>
+            Back to library
+          </PushButton>
         </View>
       )}
 
@@ -127,7 +136,6 @@ export default function ReviewScreen() {
           drops={state.drops}
           editingIsrc={editingIsrc}
           onStartEdit={(isrc) => setEditingIsrc(isrc)}
-          onCancelEdit={() => setEditingIsrc(null)}
           onCommitOverride={onCommitOverride}
           onOpenCard={(isrc) => router.push(`/card/${state.deck.id}/${isrc}`)}
           onExport={() => router.push(`/export/${state.deck.id}`)}
@@ -142,7 +150,6 @@ type LoadedReviewProps = {
   drops: DroppedTrack[];
   editingIsrc: string | null;
   onStartEdit: (isrc: string) => void;
-  onCancelEdit: () => void;
   onCommitOverride: (deckId: string, isrc: string, year: number) => Promise<void>;
   onOpenCard: (isrc: string) => void;
   onExport: () => void;
@@ -153,7 +160,6 @@ function LoadedReview({
   drops,
   editingIsrc,
   onStartEdit,
-  onCancelEdit,
   onCommitOverride,
   onOpenCard,
   onExport,
@@ -173,50 +179,111 @@ function LoadedReview({
   // wrapping the list in a ScrollView, which silently breaks scrolling.
   return (
     <View className="flex-1" style={{ minHeight: 0 }}>
-      {isSparse && (
-        <View className="bg-red px-6 py-3">
-          <Text className="font-body text-white text-sm leading-snug">
-            {percent}% of tracks dropped. That&apos;s a sparse deck. Consider a different playlist.
-          </Text>
-        </View>
-      )}
-      {hasMinorDrops && firstDrop && (
-        <View className="bg-gold px-6 py-3">
-          <Text className="font-body text-navy900 text-sm leading-snug">
-            {droppedCount === 1 ? '1 track skipped.' : `${droppedCount} tracks skipped.`}{' '}
-            Example: &ldquo;{firstDrop.artist} — {firstDrop.title}&rdquo;.
-          </Text>
-        </View>
-      )}
-
-      <View className="flex-row items-start justify-between gap-3 px-6 pt-4 pb-3">
-        <View className="flex-1 gap-2">
-          <Text className="font-display text-foreground text-2xl">Review</Text>
-          <View className="flex-row items-center gap-2">
-            <View className="rounded-full bg-lime px-3 py-1">
-              <Text className="font-body text-navy900 text-xs font-bold">
-                {`✓ ${keptCount} ${keptCount === 1 ? 'card' : 'cards'}`}
-              </Text>
-            </View>
-            {droppedCount > 0 && (
-              <View className="rounded-full bg-red px-3 py-1">
-                <Text className="font-body text-white text-xs font-bold">
-                  {`${droppedCount} dropped`}
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
-        <Button onPress={onExport} accessibilityLabel="Export PDF">
-          <Text>Export PDF</Text>
-        </Button>
-      </View>
+      <ScreenHeader
+        title="Review deck"
+        subtitle={`${keptCount} cards${droppedCount ? ` · ${droppedCount} dropped` : ''}`}
+        right={
+          <PushButton
+            variant="primary"
+            size="sm"
+            onPress={onExport}
+            accessibilityLabel="Export PDF"
+            icon={<Ionicons name="download" size={14} color={tokens.colors.navy900} />}
+          >
+            Export PDF
+          </PushButton>
+        }
+      />
 
       <FlatList
         data={rows}
         keyExtractor={(row, idx) => rowKey(row, idx)}
-        contentContainerClassName="px-6 pt-2 pb-10 gap-2"
+        contentContainerClassName="px-5 pt-2 pb-12 gap-2"
         keyboardShouldPersistTaps="handled"
+        ListHeaderComponent={
+          <View className="gap-3 pb-3">
+            {isSparse && (
+              <InlineAlert tone="red" icon="warning">
+                <Text
+                  className="text-red"
+                  style={{
+                    fontFamily: 'Nunito_700Bold',
+                    fontSize: 13,
+                    lineHeight: 18,
+                  }}
+                >
+                  <Text
+                    className="text-red"
+                    style={{
+                      fontFamily: 'Nunito_900Black',
+                      fontSize: 13,
+                      lineHeight: 18,
+                    }}
+                  >
+                    {percent}% of tracks dropped.
+                  </Text>
+                  {' '}That&apos;s a sparse deck. Consider a different playlist.
+                </Text>
+              </InlineAlert>
+            )}
+            {hasMinorDrops && firstDrop && (
+              <InlineAlert tone="gold" icon="information-circle">
+                <Text
+                  className="text-gold"
+                  style={{
+                    fontFamily: 'Nunito_700Bold',
+                    fontSize: 13,
+                    lineHeight: 18,
+                  }}
+                >
+                  <Text
+                    className="text-gold"
+                    style={{
+                      fontFamily: 'Nunito_900Black',
+                      fontSize: 13,
+                      lineHeight: 18,
+                    }}
+                  >
+                    {droppedCount === 1 ? '1 skipped.' : `${droppedCount} skipped.`}
+                  </Text>
+                  {' '}Example: &ldquo;{firstDrop.artist} — {firstDrop.title}&rdquo;.
+                </Text>
+              </InlineAlert>
+            )}
+
+            <View className="flex-row items-center gap-2">
+              <Pill tone="lime">
+                <Dot color="lime" />
+                <Text
+                  className="text-limeL"
+                  style={{
+                    fontFamily: 'Nunito_800ExtraBold',
+                    fontSize: 11,
+                    letterSpacing: 1.4,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {`✓ ${keptCount} ${keptCount === 1 ? 'card' : 'cards'}`}
+                </Text>
+              </Pill>
+              {droppedCount > 0 && (
+                <Pill tone="red">
+                  <Text
+                    className="text-red"
+                    style={{
+                      fontFamily: 'Nunito_800ExtraBold',
+                      fontSize: 11,
+                      letterSpacing: 1.4,
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {droppedCount} dropped
+                  </Text>
+                </Pill>
+              )}
+            </View>
+          </View>
+        }
         renderItem={({ item }) => {
           if (item.kind === 'dropped') {
             return <DroppedRow track={item.track} />;
@@ -227,7 +294,6 @@ function LoadedReview({
               card={item.card}
               isEditing={isEditing}
               onStartEdit={() => onStartEdit(item.card.isrc)}
-              onCancelEdit={onCancelEdit}
               onCommit={(year) => onCommitOverride(deck.id, item.card.isrc, year)}
               onOpenCard={() => onOpenCard(item.card.isrc)}
             />
@@ -242,7 +308,6 @@ type KeptRowProps = {
   card: Card;
   isEditing: boolean;
   onStartEdit: () => void;
-  onCancelEdit: () => void;
   onCommit: (year: number) => Promise<void>;
   onOpenCard: () => void;
 };
@@ -251,7 +316,6 @@ function KeptRow({
   card,
   isEditing,
   onStartEdit,
-  onCancelEdit,
   onCommit,
   onOpenCard,
 }: KeptRowProps): React.ReactElement {
@@ -267,25 +331,37 @@ function KeptRow({
       disabled={isEditing}
       role="button"
       accessibilityLabel={`Open card preview for ${card.artist} — ${card.title}`}
-      className="rounded-xl border border-navy500 bg-navy700 px-4 py-3 active:bg-navy700/80"
+      className="rounded-2xl border-[1.5px] border-navy600 bg-navy800 active:opacity-90"
     >
-      <View className="flex-row items-center gap-3">
-        <View className="flex-1 gap-1">
-          <Text className="font-body text-muted-foreground text-sm" numberOfLines={1}>
-            {card.artist}
-          </Text>
+      <View className="flex-row items-center gap-2 p-4">
+        <View className="flex-1 min-w-0">
           <Text
-            className="font-body text-foreground text-base font-bold"
+            className="text-foreground"
+            style={{
+              fontFamily: 'Nunito_800ExtraBold',
+              fontSize: 14,
+              lineHeight: 18,
+            }}
             numberOfLines={1}
           >
             {card.title}
+          </Text>
+          <Text
+            className="text-navy200 mt-0.5"
+            style={{
+              fontFamily: 'Nunito_600SemiBold',
+              fontSize: 12,
+              lineHeight: 16,
+            }}
+            numberOfLines={1}
+          >
+            {card.artist}
           </Text>
         </View>
         {isEditing ? (
           <YearEditor
             initialYear={displayYear ?? MAX_VALID_YEAR}
             onCommit={onCommit}
-            onCancel={onCancelEdit}
           />
         ) : (
           <YearDisplay
@@ -322,24 +398,35 @@ function YearDisplay({
       role="button"
       accessibilityLabel={`Edit year for ${artist} — ${title}`}
       hitSlop={8}
-      className="items-end min-w-[64px]"
+      className="items-center min-w-[56px] py-1.5 px-1"
     >
       <Text
         className={cn(
-          'font-display text-2xl',
+          'font-serif',
           hasOverride ? 'text-pink' : 'text-foreground',
         )}
-        style={{ fontSize: 24, lineHeight: 28 }}
+        style={{
+          fontFamily: 'Fraunces_900Black',
+          fontSize: 24,
+          lineHeight: 24,
+          letterSpacing: -0.48,
+        }}
       >
         {year ?? '—'}
       </Text>
       <Text
         className={cn(
-          'font-body text-[10px] font-bold tracking-widest mt-0.5',
-          hasOverride ? 'text-pink' : 'text-muted-foreground',
+          'mt-0.5',
+          hasOverride ? 'text-pink' : 'text-navy400',
         )}
+        style={{
+          fontFamily: 'Nunito_800ExtraBold',
+          fontSize: 9,
+          letterSpacing: 0.9,
+          textTransform: 'uppercase',
+        }}
       >
-        {hasOverride ? 'OVERRIDE' : 'EDIT'}
+        {hasOverride ? 'Override' : 'edit'}
       </Text>
     </Pressable>
   );
@@ -348,10 +435,9 @@ function YearDisplay({
 type YearEditorProps = {
   initialYear: number;
   onCommit: (year: number) => Promise<void>;
-  onCancel: () => void;
 };
 
-function YearEditor({ initialYear, onCommit, onCancel }: YearEditorProps): React.ReactElement {
+function YearEditor({ initialYear, onCommit }: YearEditorProps): React.ReactElement {
   const [text, setText] = useState(String(initialYear));
   const [invalid, setInvalid] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -382,7 +468,7 @@ function YearEditor({ initialYear, onCommit, onCancel }: YearEditorProps): React
       <TextInput
         value={text}
         onChangeText={(next) => {
-          setText(next);
+          setText(next.replace(/\D/g, '').slice(0, 4));
           if (invalid) setInvalid(false);
         }}
         onSubmitEditing={() => {
@@ -397,10 +483,18 @@ function YearEditor({ initialYear, onCommit, onCancel }: YearEditorProps): React
         accessibilityLabel="Year"
         placeholder="YYYY"
         placeholderTextColor="rgb(168 179 199 / 0.5)"
-        style={{ color: NAVY200, fontFamily: 'Fraunces', fontSize: 20, minWidth: 72 }}
+        style={{
+          color: tokens.colors.navy50,
+          fontFamily: 'Fraunces_900Black',
+          fontSize: 18,
+          textAlign: 'center',
+          width: 64,
+          paddingVertical: 6,
+          paddingHorizontal: 8,
+        }}
         className={cn(
-          'rounded-lg border bg-navy900 px-3 py-2 text-center',
-          invalid ? 'border-red' : 'border-navy500',
+          'rounded-xl border-[1.5px] bg-navy900',
+          invalid ? 'border-red' : 'border-lime',
         )}
       />
       <Pressable
@@ -411,19 +505,15 @@ function YearEditor({ initialYear, onCommit, onCancel }: YearEditorProps): React
         role="button"
         accessibilityLabel="Save year"
         hitSlop={8}
-        className="h-9 w-9 items-center justify-center rounded-full bg-lime active:bg-lime/90"
+        className="h-8 w-8 items-center justify-center rounded-xl bg-lime active:opacity-90"
+        style={{
+          shadowColor: tokens.colors.limeD,
+          shadowOpacity: 1,
+          shadowRadius: 0,
+          shadowOffset: { width: 0, height: 4 },
+        }}
       >
-        <Ionicons name="checkmark" size={20} color="rgb(13 20 34)" />
-      </Pressable>
-      <Pressable
-        onPress={onCancel}
-        disabled={busy}
-        role="button"
-        accessibilityLabel="Cancel edit"
-        hitSlop={8}
-        className="h-9 w-9 items-center justify-center rounded-full bg-navy500 active:bg-navy500/80"
-      >
-        <Ionicons name="close" size={18} color="rgb(168 179 199)" />
+        <Ionicons name="checkmark" size={16} color={tokens.colors.navy900} />
       </Pressable>
     </View>
   );
@@ -433,29 +523,32 @@ function DroppedRow({ track }: { track: DroppedTrack }): React.ReactElement {
   return (
     <View
       accessibilityLabel={`Dropped: ${track.artist} — ${track.title}`}
-      className="rounded-xl border border-red bg-red/15 px-4 py-3"
+      className="rounded-2xl border-[1.5px] bg-red/10 p-4"
+      style={{ borderColor: '#8A1F1F' }}
     >
-      <View className="flex-row items-center gap-3">
-        <View className="flex-1 gap-1">
-          <Text className="font-body text-muted-foreground text-sm" numberOfLines={1}>
-            {track.artist}
-          </Text>
+      <View className="flex-row items-center gap-2">
+        <View className="flex-1 min-w-0">
           <Text
-            className="font-body text-foreground text-base font-bold"
+            className="text-foreground"
+            style={{
+              fontFamily: 'Nunito_800ExtraBold',
+              fontSize: 14,
+              lineHeight: 18,
+            }}
             numberOfLines={1}
           >
             {track.title}
           </Text>
-          <Text className="font-body text-red text-xs mt-0.5" numberOfLines={1}>
-            {dropReasonCopy(track.reason)}
-          </Text>
-        </View>
-        <View className="items-end min-w-[64px]">
           <Text
-            className="font-display text-muted-foreground"
-            style={{ fontSize: 24, lineHeight: 28 }}
+            className="text-red mt-0.5"
+            style={{
+              fontFamily: 'Nunito_600SemiBold',
+              fontSize: 12,
+              lineHeight: 16,
+            }}
+            numberOfLines={1}
           >
-            —
+            {dropReasonCopy(track.reason)}
           </Text>
         </View>
       </View>
