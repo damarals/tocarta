@@ -27,6 +27,7 @@ import { RingsVisual } from '@/components/playback/RingsVisual';
 import { VinylVisual } from '@/components/playback/VinylVisual';
 import { Text } from '@/components/ui/text';
 import {
+  configureAudioModeForPlay,
   createAntiSpoilerAudioPlayer,
   type AntiSpoilerAudioPlayer,
   type PlaybackStatus,
@@ -107,6 +108,13 @@ export default function PlaybackScreen() {
 
     void (async () => {
       try {
+        // OS-level anti-spoiler enforcement (ADR-0009): set the audio mode so
+        // the device stops playback when the screen locks or the app
+        // backgrounds. With staysActiveInBackground=false, no MediaSession
+        // card is created, so the lock screen / headphones / Android Auto
+        // have nothing to surface.
+        await configureAudioModeForPlay();
+        if (cancelledRef.current) return;
         const url = await deezerAudioProvider.getPreviewUrl(parsed.isrc);
         if (cancelledRef.current) return;
         await player.play(url, { onTick, onEnded });
