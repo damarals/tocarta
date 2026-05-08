@@ -100,7 +100,7 @@ describe('YearResolver lookup', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe(
-      'https://musicbrainz.org/ws/2/isrc/GBAYE0601498?inc=recordings&fmt=json',
+      'https://musicbrainz.org/ws/2/isrc/GBAYE0601498?fmt=json',
     );
     const headers = (init as RequestInit).headers as Record<string, string>;
     expect(headers['User-Agent']).toBe('Tocarta/0.1 (silva.daniel86@gmail.com)');

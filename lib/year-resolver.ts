@@ -40,7 +40,7 @@ export function createYearResolver(opts: {
     let response: Response;
     try {
       response = await fetchImpl(
-        `https://musicbrainz.org/ws/2/isrc/${isrc}?inc=recordings&fmt=json`,
+        `https://musicbrainz.org/ws/2/isrc/${isrc}?fmt=json`,
         {
           headers: {
             'User-Agent': USER_AGENT,
