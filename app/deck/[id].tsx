@@ -8,6 +8,7 @@ import {
   Keyboard,
   Pressable,
   Text as RNText,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -39,6 +40,8 @@ const SUBTITLE_DATE_OPTIONS: Intl.DateTimeFormatOptions = {
   year: 'numeric',
 };
 
+const SEARCH_PLACEHOLDER_COLOR = 'rgba(196, 204, 223, 0.4)';
+
 function rowKey(row: DeckRow, index: number): string {
   if (row.kind === 'kept') return `k:${row.card.isrc}`;
   return `d:${index}:${row.track.artist}:${row.track.title}`;
@@ -48,6 +51,15 @@ function buildRows(deck: Deck, drops: DroppedTrack[]): DeckRow[] {
   const rows: DeckRow[] = deck.cards.map((card) => ({ kind: 'kept', card }));
   for (const track of drops) rows.push({ kind: 'dropped', track });
   return rows;
+}
+
+function rowMatchesQuery(row: DeckRow, needle: string): boolean {
+  if (needle === '') return true;
+  const haystack = row.kind === 'kept' ? row.card : row.track;
+  return (
+    haystack.artist.toLowerCase().includes(needle) ||
+    haystack.title.toLowerCase().includes(needle)
+  );
 }
 
 function dropPercent(kept: number, dropped: number): number {
@@ -215,10 +227,13 @@ function LoadedDeck({
   const firstDrop = drops[0];
   const subtitle = buildSubtitle(keptCount, droppedCount, deck.createdAt);
   const [filter, setFilter] = useState<FilterKind>('all');
-  const visibleRows = useMemo(
-    () => (filter === 'all' ? rows : rows.filter((r) => r.kind === filter)),
-    [rows, filter],
-  );
+  const [query, setQuery] = useState('');
+  const needle = query.trim().toLowerCase();
+  const visibleRows = useMemo(() => {
+    const pillFiltered =
+      filter === 'all' ? rows : rows.filter((r) => r.kind === filter);
+    return pillFiltered.filter((r) => rowMatchesQuery(r, needle));
+  }, [rows, filter, needle]);
 
   // The min-height: 0 flexbox fix referenced by #5: parent flex containers
   // must allow children to shrink below their content. On RN, putting a
@@ -276,116 +291,152 @@ function LoadedDeck({
         contentContainerClassName="px-5 pt-2 pb-12 gap-2"
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
-          hasDrops ? (
-            <View className="gap-3 pb-3">
-              {isSparse && (
-                <InlineAlert tone="red" icon="warning">
-                  <Text
-                    className="text-red"
-                    style={{
-                      fontFamily: 'Nunito_700Bold',
-                      fontSize: 13,
-                      lineHeight: 18,
-                    }}
-                  >
+          <View className="gap-3 pb-3">
+            {hasDrops && (
+              <>
+                {isSparse && (
+                  <InlineAlert tone="red" icon="warning">
                     <Text
                       className="text-red"
                       style={{
-                        fontFamily: 'Nunito_900Black',
+                        fontFamily: 'Nunito_700Bold',
                         fontSize: 13,
                         lineHeight: 18,
                       }}
                     >
-                      {percent}% of tracks dropped.
+                      <Text
+                        className="text-red"
+                        style={{
+                          fontFamily: 'Nunito_900Black',
+                          fontSize: 13,
+                          lineHeight: 18,
+                        }}
+                      >
+                        {percent}% of tracks dropped.
+                      </Text>
+                      {' '}That&apos;s a sparse deck. Consider a different playlist.
                     </Text>
-                    {' '}That&apos;s a sparse deck. Consider a different playlist.
-                  </Text>
-                </InlineAlert>
-              )}
-              {hasMinorDrops && firstDrop && (
-                <InlineAlert tone="gold" icon="information-circle">
-                  <Text
-                    className="text-gold"
-                    style={{
-                      fontFamily: 'Nunito_700Bold',
-                      fontSize: 13,
-                      lineHeight: 18,
-                    }}
-                  >
+                  </InlineAlert>
+                )}
+                {hasMinorDrops && firstDrop && (
+                  <InlineAlert tone="gold" icon="information-circle">
                     <Text
                       className="text-gold"
                       style={{
-                        fontFamily: 'Nunito_900Black',
+                        fontFamily: 'Nunito_700Bold',
                         fontSize: 13,
                         lineHeight: 18,
                       }}
                     >
-                      {droppedCount === 1 ? '1 skipped.' : `${droppedCount} skipped.`}
+                      <Text
+                        className="text-gold"
+                        style={{
+                          fontFamily: 'Nunito_900Black',
+                          fontSize: 13,
+                          lineHeight: 18,
+                        }}
+                      >
+                        {droppedCount === 1 ? '1 skipped.' : `${droppedCount} skipped.`}
+                      </Text>
+                      {' '}Example: &ldquo;{firstDrop.artist} — {firstDrop.title}&rdquo;.
                     </Text>
-                    {' '}Example: &ldquo;{firstDrop.artist} — {firstDrop.title}&rdquo;.
-                  </Text>
-                </InlineAlert>
-              )}
+                  </InlineAlert>
+                )}
 
-              <View className="flex-row items-center gap-2">
-                <Pressable
-                  onPress={() =>
-                    setFilter((prev) => (prev === 'kept' ? 'all' : 'kept'))
-                  }
-                  role="button"
-                  accessibilityLabel={
-                    filter === 'kept' ? 'Show all' : 'Filter to kept cards'
-                  }
-                  accessibilityState={{ selected: filter === 'kept' }}
-                  style={{ opacity: filter === 'dropped' ? 0.4 : 1 }}
-                >
-                  <Pill tone="lime">
-                    <Dot color="lime" />
-                    <Text
-                      className="text-limeL"
-                      style={{
-                        fontFamily: 'Nunito_800ExtraBold',
-                        fontSize: 11,
-                        letterSpacing: 1.4,
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      {`${keptCount} ${keptCount === 1 ? 'card' : 'cards'}`}
-                    </Text>
-                  </Pill>
-                </Pressable>
-                <Pressable
-                  onPress={() =>
-                    setFilter((prev) =>
-                      prev === 'dropped' ? 'all' : 'dropped',
-                    )
-                  }
-                  role="button"
-                  accessibilityLabel={
-                    filter === 'dropped'
-                      ? 'Show all'
-                      : 'Filter to skipped tracks'
-                  }
-                  accessibilityState={{ selected: filter === 'dropped' }}
-                  style={{ opacity: filter === 'kept' ? 0.4 : 1 }}
-                >
-                  <Pill tone="red">
-                    <Dot color="red" />
-                    <Text
-                      className="text-red"
-                      style={{
-                        fontFamily: 'Nunito_800ExtraBold',
-                        fontSize: 11,
-                        letterSpacing: 1.4,
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      {`${droppedCount} skipped`}
-                    </Text>
-                  </Pill>
-                </Pressable>
-              </View>
-            </View>
+                <View className="flex-row items-center gap-2">
+                  <Pressable
+                    onPress={() =>
+                      setFilter((prev) => (prev === 'kept' ? 'all' : 'kept'))
+                    }
+                    role="button"
+                    accessibilityLabel={
+                      filter === 'kept' ? 'Show all' : 'Filter to kept cards'
+                    }
+                    accessibilityState={{ selected: filter === 'kept' }}
+                    style={{ opacity: filter === 'dropped' ? 0.4 : 1 }}
+                  >
+                    <Pill tone="lime">
+                      <Dot color="lime" />
+                      <Text
+                        className="text-limeL"
+                        style={{
+                          fontFamily: 'Nunito_800ExtraBold',
+                          fontSize: 11,
+                          letterSpacing: 1.4,
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {`${keptCount} ${keptCount === 1 ? 'card' : 'cards'}`}
+                      </Text>
+                    </Pill>
+                  </Pressable>
+                  <Pressable
+                    onPress={() =>
+                      setFilter((prev) =>
+                        prev === 'dropped' ? 'all' : 'dropped',
+                      )
+                    }
+                    role="button"
+                    accessibilityLabel={
+                      filter === 'dropped'
+                        ? 'Show all'
+                        : 'Filter to skipped tracks'
+                    }
+                    accessibilityState={{ selected: filter === 'dropped' }}
+                    style={{ opacity: filter === 'kept' ? 0.4 : 1 }}
+                  >
+                    <Pill tone="red">
+                      <Dot color="red" />
+                      <Text
+                        className="text-red"
+                        style={{
+                          fontFamily: 'Nunito_800ExtraBold',
+                          fontSize: 11,
+                          letterSpacing: 1.4,
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {`${droppedCount} skipped`}
+                      </Text>
+                    </Pill>
+                  </Pressable>
+                </View>
+              </>
+            )}
+
+            <TextInput
+              value={query}
+              onChangeText={setQuery}
+              placeholder="Search by artist or title"
+              placeholderTextColor={SEARCH_PLACEHOLDER_COLOR}
+              autoCapitalize="none"
+              autoCorrect={false}
+              spellCheck={false}
+              clearButtonMode="while-editing"
+              returnKeyType="search"
+              accessibilityLabel="Search cards by artist or title"
+              className="rounded-xl bg-navy800 px-3 py-2"
+              style={{
+                color: tokens.colors.navy50,
+                fontFamily: 'Nunito_600SemiBold',
+                fontSize: 13,
+              }}
+            />
+          </View>
+        }
+        ListEmptyComponent={
+          needle !== '' ? (
+            <Text
+              className="text-navy400 text-center"
+              style={{
+                fontFamily: 'Nunito_600SemiBold',
+                fontSize: 13,
+                lineHeight: 18,
+                paddingVertical: 24,
+              }}
+            >
+              {`No cards match "${query.trim()}"`}
+            </Text>
           ) : null
         }
         renderItem={({ item }) => {
