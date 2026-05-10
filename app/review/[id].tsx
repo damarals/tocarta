@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Pressable,
+  Text as RNText,
   TextInput,
   View,
 } from 'react-native';
@@ -14,7 +15,6 @@ import { Dot } from '@/components/ui/dot';
 import { InlineAlert } from '@/components/ui/inline-alert';
 import { Pill } from '@/components/ui/pill';
 import { PushButton } from '@/components/ui/push-button';
-import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import type { DroppedTrack } from '@/lib/deck-generator';
 import { deckLibrary } from '@/lib/deck-library';
@@ -179,20 +179,49 @@ function LoadedReview({
   // wrapping the list in a ScrollView, which silently breaks scrolling.
   return (
     <View className="flex-1" style={{ minHeight: 0 }}>
-      <ScreenHeader
-        title="Review deck"
-        subtitle={`${keptCount} cards${droppedCount ? ` · ${droppedCount} dropped` : ''}`}
-        right={
-          <PushButton
-            variant="primary"
-            size="sm"
-            onPress={onExport}
-            accessibilityLabel="Export PDF"
-            icon={<Ionicons name="download" size={14} color={tokens.colors.navy900} />}
-          >
-            Export PDF
-          </PushButton>
-        }
+      <Stack.Screen
+        options={{
+          title: 'Review deck',
+          headerTitle: () => (
+            <View>
+              <RNText
+                style={{
+                  fontFamily: 'Nunito_900Black',
+                  fontSize: 18,
+                  lineHeight: 22,
+                  letterSpacing: -0.18,
+                  color: tokens.colors.navy50,
+                }}
+                numberOfLines={1}
+              >
+                Review deck
+              </RNText>
+              <RNText
+                style={{
+                  fontFamily: 'JetBrainsMono_500Medium',
+                  fontSize: 11,
+                  lineHeight: 14,
+                  color: tokens.colors.navy400,
+                  marginTop: 2,
+                }}
+                numberOfLines={1}
+              >
+                {`${keptCount} cards${droppedCount ? ` · ${droppedCount} dropped` : ''}`}
+              </RNText>
+            </View>
+          ),
+          headerRight: () => (
+            <PushButton
+              variant="primary"
+              size="sm"
+              onPress={onExport}
+              accessibilityLabel="Export PDF"
+              icon={<Ionicons name="download" size={14} color={tokens.colors.navy900} />}
+            >
+              Export PDF
+            </PushButton>
+          ),
+        }}
       />
 
       <FlatList

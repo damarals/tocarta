@@ -69,7 +69,11 @@ export default function RootLayout() {
         screenOptions={{
           headerStyle: { backgroundColor: NAVY900 },
           headerTintColor: NAVY50,
-          headerTitleStyle: { fontFamily: 'Nunito' },
+          headerTitleStyle: {
+            fontFamily: 'Nunito_900Black',
+            fontSize: 18,
+            color: NAVY50,
+          },
           contentStyle: { backgroundColor: NAVY900 },
         }}
       >
@@ -79,13 +83,13 @@ export default function RootLayout() {
           name="resolving"
           options={{ title: '', headerBackVisible: false, gestureEnabled: false }}
         />
-        <Stack.Screen name="deck/[id]" options={{ title: '' }} />
+        <Stack.Screen name="deck/[id]" options={{ title: 'Deck' }} />
         <Stack.Screen
           name="review/[id]"
           options={{ title: '', headerBackVisible: false, gestureEnabled: false }}
         />
-        <Stack.Screen name="export/[id]" options={{ title: '' }} />
-        <Stack.Screen name="card/[deckId]/[isrc]" options={{ title: '' }} />
+        <Stack.Screen name="export/[id]" options={{ title: 'Export' }} />
+        <Stack.Screen name="card/[deckId]/[isrc]" options={{ title: 'Card preview' }} />
         <Stack.Screen
           name="scan"
           options={{
@@ -97,7 +101,7 @@ export default function RootLayout() {
         <Stack.Screen name="playback" options={{ title: '' }} />
         <Stack.Screen
           name="import"
-          options={{ title: '', headerBackVisible: false, gestureEnabled: false }}
+          options={{ title: 'Import deck', headerBackVisible: false, gestureEnabled: false }}
         />
       </Stack>
       <StatusBar style="light" />

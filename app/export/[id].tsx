@@ -7,7 +7,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BrandMark } from '@/components/brand/BrandMark';
 import { PushButton } from '@/components/ui/push-button';
-import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import { deckLibrary } from '@/lib/deck-library';
 import { pdfRenderer, type RenderedDeckPdf } from '@/lib/pdf-renderer';
@@ -76,7 +75,6 @@ export default function ExportScreen() {
 
   return (
     <SafeAreaView edges={['left', 'right', 'bottom']} className="flex-1 bg-background">
-      <ScreenHeader title="Export" />
       <View className="flex-1 items-center justify-center px-6">
         {state.kind === 'loading-deck' && (
           <View className="items-center gap-4">

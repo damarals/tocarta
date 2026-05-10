@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import { deckLibrary } from '@/lib/deck-library';
 import type { Deck } from '@/lib/types';
@@ -41,7 +40,6 @@ export default function DeckDetailScreen() {
 
   return (
     <SafeAreaView edges={['left', 'right']} className="flex-1 bg-background">
-      <ScreenHeader title="Deck" />
       <View className="flex-1 items-center justify-center px-8">
         {state.kind === 'loading' && (
           <View className="items-center gap-3">
