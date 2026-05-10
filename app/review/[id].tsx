@@ -6,11 +6,11 @@ import {
   FlatList,
   Pressable,
   Text as RNText,
-  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { KeptRow } from '@/components/deck/KeptRow';
 import { Dot } from '@/components/ui/dot';
 import { InlineAlert } from '@/components/ui/inline-alert';
 import { Pill } from '@/components/ui/pill';
@@ -20,7 +20,6 @@ import type { DroppedTrack } from '@/lib/deck-generator';
 import { deckLibrary } from '@/lib/deck-library';
 import { takePostGenerationDrops } from '@/lib/post-generation-store';
 import type { Card, Deck } from '@/lib/types';
-import { cn } from '@/lib/utils';
 import { tokens } from '@/theme/tokens';
 
 type LoadState =
@@ -31,9 +30,6 @@ type LoadState =
 type ReviewRow =
   | { kind: 'kept'; card: Card }
   | { kind: 'dropped'; track: DroppedTrack };
-
-const MIN_VALID_YEAR = 1900;
-const MAX_VALID_YEAR = new Date().getFullYear();
 
 function rowKey(row: ReviewRow, index: number): string {
   if (row.kind === 'kept') return `k:${row.card.isrc}`;
@@ -365,221 +361,6 @@ function LoadedReview({
           );
         }}
       />
-    </View>
-  );
-}
-
-type KeptRowProps = {
-  card: Card;
-  isEditing: boolean;
-  onStartEdit: () => void;
-  onCommit: (year: number) => Promise<void>;
-  onOpenCard: () => void;
-};
-
-function KeptRow({
-  card,
-  isEditing,
-  onStartEdit,
-  onCommit,
-  onOpenCard,
-}: KeptRowProps): React.ReactElement {
-  const displayYear = card.yearOverride ?? card.year;
-  const hasOverride = card.yearOverride !== undefined;
-
-  // Row-level tap opens the card preview. The year cell is a separate inner
-  // Pressable that intercepts the press so editing the year stays one tap
-  // away — the OVERRIDE / EDIT caption beneath the year is the affordance.
-  return (
-    <Pressable
-      onPress={isEditing ? undefined : onOpenCard}
-      disabled={isEditing}
-      role="button"
-      accessibilityLabel={`Open card preview for ${card.artist} — ${card.title}`}
-      className="rounded-2xl border-[1.5px] border-navy600 bg-navy800 active:opacity-90"
-    >
-      <View className="flex-row items-center gap-2 p-4">
-        <View className="flex-1 min-w-0">
-          <Text
-            className="text-foreground"
-            style={{
-              fontFamily: 'Nunito_800ExtraBold',
-              fontSize: 14,
-              lineHeight: 18,
-            }}
-            numberOfLines={1}
-          >
-            {card.title}
-          </Text>
-          <Text
-            className="text-navy200 mt-0.5"
-            style={{
-              fontFamily: 'Nunito_600SemiBold',
-              fontSize: 12,
-              lineHeight: 16,
-            }}
-            numberOfLines={1}
-          >
-            {card.artist}
-          </Text>
-        </View>
-        {isEditing ? (
-          <YearEditor
-            initialYear={displayYear ?? MAX_VALID_YEAR}
-            onCommit={onCommit}
-          />
-        ) : (
-          <YearDisplay
-            year={displayYear}
-            hasOverride={hasOverride}
-            onPress={onStartEdit}
-            artist={card.artist}
-            title={card.title}
-          />
-        )}
-      </View>
-    </Pressable>
-  );
-}
-
-type YearDisplayProps = {
-  year: number | null;
-  hasOverride: boolean;
-  onPress: () => void;
-  artist: string;
-  title: string;
-};
-
-function YearDisplay({
-  year,
-  hasOverride,
-  onPress,
-  artist,
-  title,
-}: YearDisplayProps): React.ReactElement {
-  return (
-    <Pressable
-      onPress={onPress}
-      role="button"
-      accessibilityLabel={`Edit year for ${artist} — ${title}`}
-      hitSlop={8}
-      className="items-center min-w-[56px] py-1.5 px-1"
-    >
-      <Text
-        className={cn(
-          'font-serif',
-          hasOverride ? 'text-pink' : 'text-foreground',
-        )}
-        style={{
-          fontFamily: 'Fraunces_900Black',
-          fontSize: 24,
-          lineHeight: 24,
-          letterSpacing: -0.48,
-        }}
-      >
-        {year ?? '—'}
-      </Text>
-      <Text
-        className={cn(
-          'mt-0.5',
-          hasOverride ? 'text-pink' : 'text-navy400',
-        )}
-        style={{
-          fontFamily: 'Nunito_800ExtraBold',
-          fontSize: 9,
-          letterSpacing: 0.9,
-          textTransform: 'uppercase',
-        }}
-      >
-        {hasOverride ? 'Override' : 'edit'}
-      </Text>
-    </Pressable>
-  );
-}
-
-type YearEditorProps = {
-  initialYear: number;
-  onCommit: (year: number) => Promise<void>;
-};
-
-function YearEditor({ initialYear, onCommit }: YearEditorProps): React.ReactElement {
-  const [text, setText] = useState(String(initialYear));
-  const [invalid, setInvalid] = useState(false);
-  const [busy, setBusy] = useState(false);
-
-  const tryCommit = async (): Promise<void> => {
-    const trimmed = text.trim();
-    const parsed = Number.parseInt(trimmed, 10);
-    if (
-      !/^\d{4}$/.test(trimmed) ||
-      Number.isNaN(parsed) ||
-      parsed < MIN_VALID_YEAR ||
-      parsed > MAX_VALID_YEAR
-    ) {
-      setInvalid(true);
-      return;
-    }
-    setInvalid(false);
-    setBusy(true);
-    try {
-      await onCommit(parsed);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <View className="flex-row items-center gap-2">
-      <TextInput
-        value={text}
-        onChangeText={(next) => {
-          setText(next.replace(/\D/g, '').slice(0, 4));
-          if (invalid) setInvalid(false);
-        }}
-        onSubmitEditing={() => {
-          void tryCommit();
-        }}
-        keyboardType="number-pad"
-        inputMode="numeric"
-        maxLength={4}
-        autoFocus
-        editable={!busy}
-        selectTextOnFocus
-        accessibilityLabel="Year"
-        placeholder="YYYY"
-        placeholderTextColor="rgb(168 179 199 / 0.5)"
-        style={{
-          color: tokens.colors.navy50,
-          fontFamily: 'Fraunces_900Black',
-          fontSize: 18,
-          textAlign: 'center',
-          width: 64,
-          paddingVertical: 6,
-          paddingHorizontal: 8,
-        }}
-        className={cn(
-          'rounded-xl border-[1.5px] bg-navy900',
-          invalid ? 'border-red' : 'border-lime',
-        )}
-      />
-      <Pressable
-        onPress={() => {
-          void tryCommit();
-        }}
-        disabled={busy}
-        role="button"
-        accessibilityLabel="Save year"
-        hitSlop={8}
-        className="h-8 w-8 items-center justify-center rounded-xl bg-lime active:opacity-90"
-        style={{
-          shadowColor: tokens.colors.limeD,
-          shadowOpacity: 1,
-          shadowRadius: 0,
-          shadowOffset: { width: 0, height: 4 },
-        }}
-      >
-        <Ionicons name="checkmark" size={16} color={tokens.colors.navy900} />
-      </Pressable>
     </View>
   );
 }
