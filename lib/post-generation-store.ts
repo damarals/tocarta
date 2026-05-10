@@ -21,5 +21,7 @@ export function setPostGenerationDrops(deckId: string, drops: DroppedTrack[]): v
 }
 
 export function takePostGenerationDrops(deckId: string): DroppedTrack[] {
-  return store.get(deckId) ?? [];
+  const drops = store.get(deckId) ?? [];
+  store.delete(deckId);
+  return drops;
 }

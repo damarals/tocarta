@@ -76,7 +76,7 @@ export default function DeckDetailScreen() {
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [editingIsrc, setEditingIsrc] = useState<string | null>(null);
 
-  // Read drops once on mount; re-renders must not re-take from the store.
+  // Single-shot: takePostGenerationDrops consumes from the store; capture once on mount.
   const dropsRef = useRef<DroppedTrack[] | null>(null);
 
   const reload = useCallback(
