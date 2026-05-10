@@ -3,11 +3,14 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   BackHandler,
   FlatList,
   Keyboard,
+  Modal,
   Pressable,
   Text as RNText,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -136,6 +139,26 @@ export default function DeckDetailScreen() {
     [reload],
   );
 
+  const onRename = useCallback(
+    async (deckId: string, name: string): Promise<void> => {
+      await deckLibrary.updateName(deckId, name);
+      setState((current) =>
+        current.kind === 'loaded'
+          ? { ...current, deck: { ...current.deck, name } }
+          : current,
+      );
+    },
+    [],
+  );
+
+  const onDelete = useCallback(
+    async (deckId: string): Promise<void> => {
+      await deckLibrary.delete(deckId);
+      router.replace('/');
+    },
+    [router],
+  );
+
   return (
     <SafeAreaView edges={['left', 'right']} className="flex-1 bg-background">
       {state.kind === 'loading' && (
@@ -177,6 +200,8 @@ export default function DeckDetailScreen() {
           onCommitOverride={onCommitOverride}
           onOpenCard={(isrc) => router.push(`/card/${state.deck.id}/${isrc}`)}
           onExport={() => router.push(`/export/${state.deck.id}`)}
+          onRename={onRename}
+          onDelete={onDelete}
         />
       )}
     </SafeAreaView>
@@ -191,6 +216,8 @@ type LoadedDeckProps = {
   onCommitOverride: (deckId: string, isrc: string, year: number) => Promise<void>;
   onOpenCard: (isrc: string) => void;
   onExport: () => void;
+  onRename: (deckId: string, name: string) => Promise<void>;
+  onDelete: (deckId: string) => Promise<void>;
 };
 
 type FilterKind = 'all' | 'kept' | 'dropped';
@@ -203,6 +230,8 @@ function LoadedDeck({
   onCommitOverride,
   onOpenCard,
   onExport,
+  onRename,
+  onDelete,
 }: LoadedDeckProps): React.ReactElement {
   const rows = useMemo(() => buildRows(deck, drops), [deck, drops]);
   const keptCount = deck.cards.length;
@@ -219,6 +248,28 @@ function LoadedDeck({
     () => (filter === 'all' ? rows : rows.filter((r) => r.kind === filter)),
     [rows, filter],
   );
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [renameOpen, setRenameOpen] = useState(false);
+
+  const confirmDelete = useCallback(() => {
+    Alert.alert(
+      `Delete "${deck.name}"?`,
+      'This is permanent. Year overrides for this deck will be lost.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            onDelete(deck.id).catch((err) => {
+              Alert.alert('Could not delete deck', String(err));
+            });
+          },
+        },
+      ],
+    );
+  }, [deck.id, deck.name, onDelete]);
 
   // The min-height: 0 flexbox fix referenced by #5: parent flex containers
   // must allow children to shrink below their content. On RN, putting a
@@ -257,16 +308,54 @@ function LoadedDeck({
             </View>
           ),
           headerRight: () => (
-            <PushButton
-              variant="primary"
-              size="sm"
-              onPress={onExport}
-              accessibilityLabel="Export PDF"
-              icon={<Ionicons name="download" size={14} color={tokens.colors.navy900} />}
-            >
-              Export PDF
-            </PushButton>
+            <View className="flex-row items-center gap-2">
+              <PushButton
+                variant="primary"
+                size="sm"
+                onPress={onExport}
+                accessibilityLabel="Export PDF"
+                icon={<Ionicons name="download" size={14} color={tokens.colors.navy900} />}
+              >
+                Export PDF
+              </PushButton>
+              <Pressable
+                onPress={() => setMenuOpen(true)}
+                role="button"
+                accessibilityLabel="Deck actions"
+                hitSlop={8}
+                className="h-10 w-10 items-center justify-center rounded-2xl active:bg-navy700/50"
+              >
+                <Ionicons
+                  name="ellipsis-vertical"
+                  size={20}
+                  color={tokens.colors.navy50}
+                />
+              </Pressable>
+            </View>
           ),
+        }}
+      />
+
+      <DeckActionsMenu
+        visible={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        onRename={() => {
+          setMenuOpen(false);
+          setRenameOpen(true);
+        }}
+        onDelete={() => {
+          setMenuOpen(false);
+          confirmDelete();
+        }}
+      />
+
+      <RenameDeckModal
+        visible={renameOpen}
+        initialName={deck.name}
+        onClose={() => setRenameOpen(false)}
+        onCommit={async (name) => {
+          await onRename(deck.id, name);
+          setRenameOpen(false);
         }}
       />
 
@@ -450,4 +539,187 @@ function dropReasonCopy(reason: DroppedTrack['reason']): string {
   // so the screen never has to reach for the underlying enum value and so
   // future reasons can be remapped here without touching the row component.
   return reason;
+}
+
+type DeckActionsMenuProps = {
+  visible: boolean;
+  onClose: () => void;
+  onRename: () => void;
+  onDelete: () => void;
+};
+
+function DeckActionsMenu({
+  visible,
+  onClose,
+  onRename,
+  onDelete,
+}: DeckActionsMenuProps): React.ReactElement {
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <Pressable
+        onPress={onClose}
+        className="flex-1 bg-black/50 items-end justify-start"
+      >
+        <Pressable
+          onPress={(e) => e.stopPropagation()}
+          className="mt-16 mr-3 rounded-2xl bg-navy800 border-[1.5px] border-navy600 overflow-hidden"
+          style={{ minWidth: 200 }}
+        >
+          <Pressable
+            onPress={onRename}
+            role="button"
+            accessibilityLabel="Rename deck"
+            className="flex-row items-center gap-3 px-4 py-3 active:bg-navy700"
+          >
+            <Ionicons name="pencil" size={18} color={tokens.colors.navy50} />
+            <RNText
+              style={{
+                fontFamily: 'Nunito_700Bold',
+                fontSize: 15,
+                color: tokens.colors.navy50,
+              }}
+            >
+              Rename deck
+            </RNText>
+          </Pressable>
+          <View className="h-px bg-navy600" />
+          <Pressable
+            onPress={onDelete}
+            role="button"
+            accessibilityLabel="Delete deck"
+            className="flex-row items-center gap-3 px-4 py-3 active:bg-navy700"
+          >
+            <Ionicons name="trash" size={18} color={tokens.colors.red} />
+            <RNText
+              style={{
+                fontFamily: 'Nunito_700Bold',
+                fontSize: 15,
+                color: tokens.colors.red,
+              }}
+            >
+              Delete deck
+            </RNText>
+          </Pressable>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+}
+
+type RenameDeckModalProps = {
+  visible: boolean;
+  initialName: string;
+  onClose: () => void;
+  onCommit: (name: string) => Promise<void>;
+};
+
+function RenameDeckModal({
+  visible,
+  initialName,
+  onClose,
+  onCommit,
+}: RenameDeckModalProps): React.ReactElement {
+  const [text, setText] = useState(initialName);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (visible) {
+      setText(initialName);
+      setBusy(false);
+    }
+  }, [visible, initialName]);
+
+  const trimmed = text.trim();
+  const canCommit = trimmed.length > 0 && !busy;
+
+  const submit = async (): Promise<void> => {
+    if (!canCommit) return;
+    setBusy(true);
+    try {
+      await onCommit(trimmed);
+    } catch (err) {
+      Alert.alert('Could not rename deck', String(err));
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <Pressable
+        onPress={onClose}
+        className="flex-1 bg-black/60 items-center justify-center px-6"
+      >
+        <Pressable
+          onPress={(e) => e.stopPropagation()}
+          className="w-full rounded-2xl bg-navy800 border-[1.5px] border-navy600 p-5 gap-4"
+          style={{ maxWidth: 420 }}
+        >
+          <RNText
+            style={{
+              fontFamily: 'Nunito_900Black',
+              fontSize: 18,
+              lineHeight: 22,
+              color: tokens.colors.navy50,
+            }}
+          >
+            Rename deck
+          </RNText>
+          <TextInput
+            value={text}
+            onChangeText={setText}
+            onSubmitEditing={() => {
+              void submit();
+            }}
+            autoFocus
+            editable={!busy}
+            selectTextOnFocus
+            returnKeyType="done"
+            accessibilityLabel="Deck name"
+            placeholder="Deck name"
+            placeholderTextColor="rgb(168 179 199 / 0.5)"
+            style={{
+              color: tokens.colors.navy50,
+              fontFamily: 'Nunito_700Bold',
+              fontSize: 16,
+              paddingVertical: 10,
+              paddingHorizontal: 12,
+            }}
+            className="rounded-xl border-[1.5px] border-lime bg-navy900"
+          />
+          <View className="flex-row justify-end gap-2">
+            <PushButton
+              variant="ghost"
+              size="sm"
+              onPress={onClose}
+              accessibilityLabel="Cancel rename"
+              disabled={busy}
+            >
+              Cancel
+            </PushButton>
+            <PushButton
+              variant="primary"
+              size="sm"
+              onPress={() => {
+                void submit();
+              }}
+              accessibilityLabel="Save name"
+              disabled={!canCommit}
+            >
+              Save
+            </PushButton>
+          </View>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
 }
