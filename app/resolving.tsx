@@ -219,7 +219,6 @@ function WorkingView({
 }): React.ReactElement {
   const fraction = progressFraction(progress);
   const recent = log.slice(-LIVE_LOG_LINES);
-  const percent = Math.round(fraction * 100);
 
   // Animate the bar fill width on each progress change with a 220ms ease.
   const widthAnim = useRef(new Animated.Value(fraction)).current;
@@ -290,61 +289,38 @@ function WorkingView({
               {formatEta(progress)}
             </Text>
           </View>
-          <View className="flex-row justify-between mt-1">
-            <Text
-              className="text-navy400"
-              style={{
-                fontFamily: 'JetBrainsMono_500Medium',
-                fontSize: 11,
-              }}
-            >
-              {progress.dropped} dropped
-            </Text>
-            <Text
-              className="text-navy400"
-              style={{
-                fontFamily: 'JetBrainsMono_500Medium',
-                fontSize: 11,
-              }}
-            >
-              {percent}%
-            </Text>
-          </View>
         </View>
 
-        {recent.length > 0 && (
-          <View
-            className="w-full max-w-[320px] mt-7"
-            style={{ minHeight: recent.length * 18 }}
-          >
-            {recent.map((line, idx) => {
-              const opacity =
-                LOG_OPACITIES[
-                  Math.max(0, LOG_OPACITIES.length - recent.length + idx)
-                ] ?? 1;
-              const isDropped = line.year === null;
-              return (
-                <Text
-                  key={`${line.isrc}-${idx}`}
-                  className={cn(isDropped ? 'text-red' : 'text-navy200')}
-                  numberOfLines={1}
-                  style={{
-                    fontFamily: 'JetBrainsMono_500Medium',
-                    fontSize: 11,
-                    lineHeight: 18,
-                    opacity,
-                  }}
-                >
-                  {line.artist
-                    ? `${line.artist} — ${line.title}`
-                    : line.isrc}
-                  {' → '}
-                  {isDropped ? 'skipped' : `${line.year} ✓`}
-                </Text>
-              );
-            })}
-          </View>
-        )}
+        <View
+          className="w-full max-w-[320px] mt-7"
+          style={{ minHeight: LIVE_LOG_LINES * 22 }}
+        >
+          {recent.map((line, idx) => {
+            const opacity =
+              LOG_OPACITIES[
+                Math.max(0, LOG_OPACITIES.length - recent.length + idx)
+              ] ?? 1;
+            const isDropped = line.year === null;
+            const label = line.artist
+              ? `${line.artist} — ${line.title}`
+              : line.isrc;
+            return (
+              <Text
+                key={`${line.isrc}-${idx}`}
+                className={cn(isDropped ? 'text-red' : 'text-navy200')}
+                numberOfLines={1}
+                style={{
+                  fontFamily: 'Nunito_600SemiBold',
+                  fontSize: 13,
+                  lineHeight: 22,
+                  opacity,
+                }}
+              >
+                {isDropped ? label : `${label} · ${line.year}`}
+              </Text>
+            );
+          })}
+        </View>
       </View>
       <View className="px-5 pb-2">
         <PushButton
