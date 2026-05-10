@@ -83,11 +83,7 @@ export default function RootLayout() {
           name="resolving"
           options={{ title: '', headerBackVisible: false, gestureEnabled: false }}
         />
-        <Stack.Screen name="deck/[id]" options={{ title: 'Deck' }} />
-        <Stack.Screen
-          name="review/[id]"
-          options={{ title: '', headerBackVisible: false, gestureEnabled: false }}
-        />
+        <Stack.Screen name="deck/[id]" options={{ title: '' }} />
         <Stack.Screen name="export/[id]" options={{ title: 'Export' }} />
         <Stack.Screen name="card/[deckId]/[isrc]" options={{ title: 'Card preview' }} />
         <Stack.Screen
