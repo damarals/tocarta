@@ -86,7 +86,7 @@ export default function LibraryScreen() {
   const deckCount = state.kind === 'loaded' ? state.decks.length : 0;
 
   return (
-    <SafeAreaView edges={['top', 'left', 'right']} className="flex-1 bg-background">
+    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} className="flex-1 bg-background">
       <View className="flex-row items-center gap-2.5 px-5 pt-5 pb-4">
         <BrandMark size={36} />
         <Wordmark size={22} />
