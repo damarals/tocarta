@@ -4,7 +4,6 @@ import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import QRCode from 'react-native-qrcode-svg';
 
-import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import { deckLibrary } from '@/lib/deck-library';
 import { parseDeezerPlaylistUrl } from '@/lib/deezer-url';
@@ -106,7 +105,6 @@ function CardPreviews({ deck, card }: CardPreviewsProps): React.ReactElement {
 
   return (
     <View className="flex-1">
-      <ScreenHeader title="Card preview" />
       <ScrollView contentContainerClassName="px-5 pt-1 pb-10">
         <Text
           className="text-navy200 mb-4"

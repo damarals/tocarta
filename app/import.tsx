@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BrandMark } from '@/components/brand/BrandMark';
 import { InlineAlert } from '@/components/ui/inline-alert';
 import { PushButton } from '@/components/ui/push-button';
-import { ScreenHeader } from '@/components/ui/screen-header';
 import { Surface } from '@/components/ui/surface';
 import { Text } from '@/components/ui/text';
 import type { DeckPointer } from '@/lib/deck-pointer';
@@ -82,7 +81,6 @@ export default function ImportScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right', 'bottom']} className="flex-1 bg-background">
-      <ScreenHeader title="Import deck" />
       <View className="flex-1 px-5 pb-5">
         {state.kind === 'loading' && <LoadingView />}
         {state.kind === 'unsupported' && (

@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Pressable,
+  Text as RNText,
   TextInput,
   View,
 } from 'react-native';
@@ -14,7 +15,6 @@ import { Dot } from '@/components/ui/dot';
 import { InlineAlert } from '@/components/ui/inline-alert';
 import { Pill } from '@/components/ui/pill';
 import { PushButton } from '@/components/ui/push-button';
-import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import type { DroppedTrack } from '@/lib/deck-generator';
 import { deckLibrary } from '@/lib/deck-library';
@@ -155,6 +155,8 @@ type LoadedReviewProps = {
   onExport: () => void;
 };
 
+type FilterKind = 'all' | 'kept' | 'dropped';
+
 function LoadedReview({
   deck,
   drops,
@@ -172,6 +174,11 @@ function LoadedReview({
   const isSparse = total > 0 && percent > 30;
   const hasMinorDrops = !isSparse && droppedCount > 0;
   const firstDrop = drops[0];
+  const [filter, setFilter] = useState<FilterKind>('all');
+  const visibleRows = useMemo(
+    () => (filter === 'all' ? rows : rows.filter((r) => r.kind === filter)),
+    [rows, filter],
+  );
 
   // The min-height: 0 flexbox fix referenced by #5: parent flex containers
   // must allow children to shrink below their content. On RN, putting a
@@ -179,24 +186,53 @@ function LoadedReview({
   // wrapping the list in a ScrollView, which silently breaks scrolling.
   return (
     <View className="flex-1" style={{ minHeight: 0 }}>
-      <ScreenHeader
-        title="Review deck"
-        subtitle={`${keptCount} cards${droppedCount ? ` · ${droppedCount} dropped` : ''}`}
-        right={
-          <PushButton
-            variant="primary"
-            size="sm"
-            onPress={onExport}
-            accessibilityLabel="Export PDF"
-            icon={<Ionicons name="download" size={14} color={tokens.colors.navy900} />}
-          >
-            Export PDF
-          </PushButton>
-        }
+      <Stack.Screen
+        options={{
+          title: 'Review deck',
+          headerTitle: () => (
+            <View>
+              <RNText
+                style={{
+                  fontFamily: 'Nunito_900Black',
+                  fontSize: 18,
+                  lineHeight: 22,
+                  letterSpacing: -0.18,
+                  color: tokens.colors.navy50,
+                }}
+                numberOfLines={1}
+              >
+                Review deck
+              </RNText>
+              <RNText
+                style={{
+                  fontFamily: 'JetBrainsMono_500Medium',
+                  fontSize: 11,
+                  lineHeight: 14,
+                  color: tokens.colors.navy400,
+                  marginTop: 2,
+                }}
+                numberOfLines={1}
+              >
+                {`${keptCount} cards${droppedCount ? ` · ${droppedCount} skipped` : ''}`}
+              </RNText>
+            </View>
+          ),
+          headerRight: () => (
+            <PushButton
+              variant="primary"
+              size="sm"
+              onPress={onExport}
+              accessibilityLabel="Export PDF"
+              icon={<Ionicons name="download" size={14} color={tokens.colors.navy900} />}
+            >
+              Export PDF
+            </PushButton>
+          ),
+        }}
       />
 
       <FlatList
-        data={rows}
+        data={visibleRows}
         keyExtractor={(row, idx) => rowKey(row, idx)}
         contentContainerClassName="px-5 pt-2 pb-12 gap-2"
         keyboardShouldPersistTaps="handled"
@@ -252,24 +288,21 @@ function LoadedReview({
             )}
 
             <View className="flex-row items-center gap-2">
-              <Pill tone="lime">
-                <Dot color="lime" />
-                <Text
-                  className="text-limeL"
-                  style={{
-                    fontFamily: 'Nunito_800ExtraBold',
-                    fontSize: 11,
-                    letterSpacing: 1.4,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {`✓ ${keptCount} ${keptCount === 1 ? 'card' : 'cards'}`}
-                </Text>
-              </Pill>
-              {droppedCount > 0 && (
-                <Pill tone="red">
+              <Pressable
+                onPress={() =>
+                  setFilter((prev) => (prev === 'kept' ? 'all' : 'kept'))
+                }
+                role="button"
+                accessibilityLabel={
+                  filter === 'kept' ? 'Show all' : 'Filter to kept cards'
+                }
+                accessibilityState={{ selected: filter === 'kept' }}
+                style={{ opacity: filter === 'dropped' ? 0.4 : 1 }}
+              >
+                <Pill tone="lime">
+                  <Dot color="lime" />
                   <Text
-                    className="text-red"
+                    className="text-limeL"
                     style={{
                       fontFamily: 'Nunito_800ExtraBold',
                       fontSize: 11,
@@ -277,9 +310,41 @@ function LoadedReview({
                       textTransform: 'uppercase',
                     }}
                   >
-                    {droppedCount} dropped
+                    {`${keptCount} ${keptCount === 1 ? 'card' : 'cards'}`}
                   </Text>
                 </Pill>
+              </Pressable>
+              {droppedCount > 0 && (
+                <Pressable
+                  onPress={() =>
+                    setFilter((prev) =>
+                      prev === 'dropped' ? 'all' : 'dropped',
+                    )
+                  }
+                  role="button"
+                  accessibilityLabel={
+                    filter === 'dropped'
+                      ? 'Show all'
+                      : 'Filter to skipped tracks'
+                  }
+                  accessibilityState={{ selected: filter === 'dropped' }}
+                  style={{ opacity: filter === 'kept' ? 0.4 : 1 }}
+                >
+                  <Pill tone="red">
+                    <Dot color="red" />
+                    <Text
+                      className="text-red"
+                      style={{
+                        fontFamily: 'Nunito_800ExtraBold',
+                        fontSize: 11,
+                        letterSpacing: 1.4,
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {`${droppedCount} skipped`}
+                    </Text>
+                  </Pill>
+                </Pressable>
               )}
             </View>
           </View>

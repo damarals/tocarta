@@ -109,7 +109,7 @@ export default function GenerateScreen() {
             <TextInput
               value={url}
               onChangeText={setUrl}
-              placeholder={EXAMPLE_URL}
+              placeholder="https://..."
               placeholderTextColor={PLACEHOLDER_TEXT_COLOR}
               keyboardType="url"
               autoCapitalize="none"
@@ -119,6 +119,7 @@ export default function GenerateScreen() {
               spellCheck={false}
               returnKeyType="go"
               onSubmitEditing={onSubmit}
+              numberOfLines={1}
               accessibilityLabel="Deezer playlist link"
               style={{
                 color: INPUT_TEXT_COLOR,
