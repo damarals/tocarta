@@ -7,6 +7,7 @@ export interface DeckLibrary {
   load(id: string): Promise<Deck | null>;
   list(): Promise<Deck[]>;
   delete(id: string): Promise<void>;
+  updateName(id: string, name: string): Promise<void>;
   updateYearOverride(deckId: string, isrc: string, year: number): Promise<void>;
 }
 
@@ -73,6 +74,16 @@ export const deckLibrary: DeckLibrary = {
   delete(id: string): Promise<void> {
     return withWriteLock(id, async () => {
       await AsyncStorage.removeItem(keyFor(id));
+    });
+  },
+  updateName(id: string, name: string): Promise<void> {
+    return withWriteLock(id, async () => {
+      const deck = await readDeck(id);
+      if (deck === null) {
+        throw new Error(`DeckLibrary.updateName: deck not found: ${id}`);
+      }
+      deck.name = name;
+      await AsyncStorage.setItem(keyFor(id), JSON.stringify(deck));
     });
   },
   updateYearOverride(deckId: string, isrc: string, year: number): Promise<void> {
