@@ -154,7 +154,7 @@ export default function ResolvingScreen() {
         if (cancelled) return;
 
         setPostGenerationDrops(result.deck.id, result.droppedTracks);
-        router.replace(`/review/${result.deck.id}`);
+        router.replace(`/deck/${result.deck.id}`);
       } catch (err) {
         if (cancelled) return;
         if ((err as { name?: string }).name === 'AbortError') return;
