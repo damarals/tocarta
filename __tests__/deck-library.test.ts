@@ -101,6 +101,27 @@ describe('DeckLibrary.delete', () => {
   });
 });
 
+describe('DeckLibrary.updateName', () => {
+  test('persists the new name and leaves other fields untouched', async () => {
+    const deck = sampleDeck();
+    await deckLibrary.save(deck);
+
+    await deckLibrary.updateName(deck.id, 'Summer Mix 2024');
+
+    const loaded = await deckLibrary.load(deck.id);
+    expect(loaded).not.toBeNull();
+    expect(loaded!.name).toBe('Summer Mix 2024');
+    expect(loaded!.id).toBe(deck.id);
+    expect(loaded!.sourceUrl).toBe(deck.sourceUrl);
+    expect(loaded!.createdAt).toBe(deck.createdAt);
+    expect(loaded!.cards).toEqual(deck.cards);
+  });
+
+  test('throws when the deck does not exist', async () => {
+    await expect(deckLibrary.updateName('missing', 'Anything')).rejects.toThrow();
+  });
+});
+
 describe('DeckLibrary.updateYearOverride', () => {
   test('sets yearOverride only on the matching card; deck and other cards untouched', async () => {
     const deck = sampleDeck({
