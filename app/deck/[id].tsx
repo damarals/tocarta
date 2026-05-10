@@ -3,7 +3,9 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  BackHandler,
   FlatList,
+  Keyboard,
   Pressable,
   Text as RNText,
   View,
@@ -104,6 +106,26 @@ export default function DeckDetailScreen() {
     }
     void reload(id);
   }, [id, reload]);
+
+  // Dismiss the year editor on Android hardware back without committing.
+  useEffect(() => {
+    if (editingIsrc === null) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      setEditingIsrc(null);
+      return true;
+    });
+    return () => sub.remove();
+  }, [editingIsrc]);
+
+  // Tapping outside the input collapses the soft keyboard via FlatList's
+  // keyboardShouldPersistTaps="handled". Mirror that to dismiss the editor.
+  useEffect(() => {
+    if (editingIsrc === null) return;
+    const sub = Keyboard.addListener('keyboardDidHide', () => {
+      setEditingIsrc(null);
+    });
+    return () => sub.remove();
+  }, [editingIsrc]);
 
   const onCommitOverride = useCallback(
     async (deckId: string, isrc: string, year: number): Promise<void> => {
